@@ -20,7 +20,7 @@ cd back/
 composer install --no-interaction
 
 # Install a fresh & empty database
-(complete this part)
+php artisan migrate
 ```
 
 ## Try local

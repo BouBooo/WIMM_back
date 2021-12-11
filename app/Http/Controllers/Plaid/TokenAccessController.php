@@ -3,14 +3,27 @@
 namespace App\Http\Controllers\Plaid;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use TomorrowIdeas\Plaid\Plaid;
+use TomorrowIdeas\Plaid\PlaidRequestException;
 
 class TokenAccessController extends Controller
 {
-    public function createAccessToken(Request $request)
+    private Plaid $client;
+
+    public function __construct()
+    {
+        $this->client = new Plaid(
+            config('services.plaid.client_id'),
+            config('services.plaid.secret'),
+            'sandbox'
+        );
+    }
+
+    public function createLinkToken(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'client_user_id' => 'required|string',
@@ -20,23 +33,45 @@ class TokenAccessController extends Controller
             return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
         }
 
-        $params = [
-            'client_id' => config('services.plaid.client_id'),
-            'secret' => config('services.plaid.secret'),
-            'client_name' => 'Sandbox Plaid Test App',
-            'language' => app()->getLocale(),
-            'country_codes' => ['FR'],
-            'user' => (object) ['client_user_id' => 'some-unique-client-id'],
-            'products' => ['auth']
-        ];
+        $locale = app()->getLocale();
 
-        $response = Http::post(config('services.plaid.create_access_token'), $params);
+        try {
+            $response = $this->client->tokens->create(
+                'Sandbox Plaid Test App',
+                $locale,
+                [strtoupper($locale)],
+                $validator->validated()['client_user_id'],
+                ['auth'],
+            );
+        } catch (PlaidRequestException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode());
+        }
 
-        return $response->json();
+        return response()->json([
+            'message' => 'Plaid public token created',
+            'linkToken' => $response->link_token,
+        ], ResponseAlias::HTTP_OK);
     }
 
-    public function createPublicToken(Request $request)
+    public function exchangePublicToken(Request $request): JsonResponse
     {
-        // TODO
+        $validator = Validator::make($request->all(), [
+           'public_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $response = (array) $this->client->items->exchangeToken($validator->validated()['public_token']);
+        } catch (PlaidRequestException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode());
+        }
+
+        return response()->json([
+            'message' => 'Plaid access token created',
+            'accessToken' => $response->access_token,
+        ], ResponseAlias::HTTP_OK);
     }
 }

@@ -27,5 +27,9 @@ Route::group([
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
 });
 
-Route::post('/access-token/create', [TokenAccessController::class, 'createAccessToken']);
-Route::post('/public-token/exchange', [TokenAccessController::class, 'createPublicToken']);
+Route::group([
+    'middleware' => 'api',
+], function ($router) {
+    Route::post('/link-token/create', [TokenAccessController::class, 'createLinkToken']);
+    Route::post('/public-token/exchange', [TokenAccessController::class, 'exchangePublicToken']);
+});

@@ -18,9 +18,14 @@ cd back/
 
 # Composer
 composer install --no-interaction
+# OR
+make install
 
 # Install a fresh & empty database
 php artisan migrate
+
+# Generate JWT secret for auth
+php artisan jwt:secret
 ```
 
 ## Try local

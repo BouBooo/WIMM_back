@@ -17,10 +17,12 @@ class UserController extends Controller
 
     public function update(Request $request): JsonResponse
     {
+        $user = auth()->user();
+
         $validator = Validator::make($request->all(), [
             'firstName' => 'required|string|between:2,100',
             'lastName' => 'required|string|between:2,100',
-            'email' => 'unique:users,email,'.auth()->id().',id',
+            'email' => 'unique:users,email,'. $user->id .',id',
             'password' => 'required|string|min:6',
         ]);
 
@@ -28,11 +30,11 @@ class UserController extends Controller
             return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
         }
 
-        User::find(auth()->id())->update($request->all());
+        $user->update($request->all());
 
         return response()->json([
             'message' => 'User successfully updated',
-            'user' => auth()->user()->fresh()
+            'user' => $user->fresh()
         ], ResponseAlias::HTTP_CREATED);
     }
 }

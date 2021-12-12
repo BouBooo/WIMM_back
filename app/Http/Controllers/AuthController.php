@@ -69,11 +69,6 @@ class AuthController extends Controller
         return $this->createNewToken(auth()->refresh());
     }
 
-    public function userProfile(): JsonResponse
-    {
-        return response()->json(auth()->user());
-    }
-
     private function createNewToken(string $token): JsonResponse
     {
         return response()->json([

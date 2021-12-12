@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +12,11 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
+    }
+
+    public function userProfile(): JsonResponse
+    {
+        return response()->json(auth()->user());
     }
 
     public function update(Request $request): JsonResponse
@@ -35,6 +39,6 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User successfully updated',
             'user' => $user->fresh()
-        ], ResponseAlias::HTTP_CREATED);
+        ], ResponseAlias::HTTP_OK);
     }
 }

@@ -25,13 +25,13 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);
-    Route::post('/user-profile', [UserController::class, 'update']);
 });
 
 Route::group([
     'middleware' => 'api',
 ], function ($router) {
+    Route::get('/user-profile', [UserController::class, 'userProfile']);
+    Route::post('/user-profile', [UserController::class, 'update']);
     Route::post('/link-token/create', [TokenAccessController::class, 'createLinkToken']);
     Route::post('/public-token/exchange', [TokenAccessController::class, 'exchangePublicToken']);
 });

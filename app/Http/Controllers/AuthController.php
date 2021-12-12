@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['login', 'register']);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function login(Request $request): JsonResponse
@@ -43,7 +43,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), ResponseAlias::HTTP_BAD_REQUEST);
+            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
         }
 
         $user = User::create(array_merge(

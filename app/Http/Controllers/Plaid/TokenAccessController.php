@@ -72,7 +72,7 @@ class TokenAccessController extends Controller
 
         return response()->json([
             'message' => 'Plaid access token created',
-            'accessToken' => $response->access_token,
+            'accessToken' => $response['access_token'],
         ], ResponseAlias::HTTP_OK);
     }
 }

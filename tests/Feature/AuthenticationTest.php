@@ -41,6 +41,20 @@ class AuthenticationTest extends TestCase
             ]);
     }
 
+    public function testLoginWithBadCredentials(): void
+    {
+        $user = User::factory()->create();
+
+        $userData = [
+            "email" => $user->email,
+            "password" => $user->password,
+        ];
+
+        $this->jsonRequest(Request::METHOD_POST, '/auth/login', $userData)
+            ->assertStatus(Response::HTTP_UNAUTHORIZED)
+            ->assertExactJson(['error' => 'Unauthorized']);
+    }
+
     public function testSuccessfulLogin(): void
     {
         $user = User::factory()->create([

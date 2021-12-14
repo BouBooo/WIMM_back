@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use TomorrowIdeas\Plaid\Entities\User;
 use TomorrowIdeas\Plaid\Plaid;
 use TomorrowIdeas\Plaid\PlaidRequestException;
 
@@ -40,7 +41,7 @@ class TokenAccessController extends Controller
                 'Sandbox Plaid Test App',
                 $locale,
                 [strtoupper($locale)],
-                $validator->validated()['client_user_id'],
+                new User($validator->validated()['client_user_id']),
                 ['auth'],
             );
         } catch (PlaidRequestException $e) {

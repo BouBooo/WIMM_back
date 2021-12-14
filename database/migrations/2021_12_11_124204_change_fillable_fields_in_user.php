@@ -15,6 +15,9 @@ class ChangeFillableFieldsInUser extends Migration
     {
         Schema::table('users', function (Blueprint $table): void {
             $table->dropColumn('name');
+        });
+
+        Schema::table('users', function (Blueprint $table): void {
             $table->after('email', function ($table): void {
                 $table->string('firstName');
                 $table->string('lastName');
@@ -31,8 +34,7 @@ class ChangeFillableFieldsInUser extends Migration
     {
         Schema::table('users', function (Blueprint $table): void {
             $table->string('name');
-            $table->dropColumn('firstName');
-            $table->dropColumn('lastName');
+            $table->dropColumn(['firstName', 'lastName']);
         });
     }
 }

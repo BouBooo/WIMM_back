@@ -33,7 +33,5 @@ return [
     'plaid' => [
         'client_id' => env('PLAID_CLIENT_ID'),
         'secret' => env('PLAID_SECRET'),
-        'create_access_token' => 'https://sandbox.plaid.com/link/token/create',
-        'exchange_public_token' => 'https://sandbox.plaid.com/item/public_token/exchange'
     ],
 ];

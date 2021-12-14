@@ -65,14 +65,14 @@ class TokenAccessController extends Controller
         }
 
         try {
-            $response = (array) $this->client->items->exchangeToken($validator->validated()['public_token']);
+            $response = $this->client->items->exchangeToken($validator->validated()['public_token']);
         } catch (PlaidRequestException $e) {
             return response()->json(['message' => $e->getMessage()], $e->getCode());
         }
 
         return response()->json([
             'message' => 'Plaid access token created',
-            'accessToken' => $response['access_token'],
+            'accessToken' => $response->access_token,
         ], ResponseAlias::HTTP_OK);
     }
 }

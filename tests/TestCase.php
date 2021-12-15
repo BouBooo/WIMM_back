@@ -13,6 +13,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function jsonRequest(string $method, string $uri, array $data = [], array $headers = []): TestResponse
     {
-        return $this->json($method, self::BASE_API_URL . $uri, $data, [...$headers, 'Accept' => 'application/json']);
+        return $this->json($method, self::BASE_API_URL . $uri, $data, $headers);
     }
 }

@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('jwt.verify', ['except' => ['login', 'register']]);
     }
 
     public function login(Request $request): JsonResponse
@@ -23,7 +23,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), ResponseAlias::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
         }
 
         if (!$token = auth()->attempt($validator->validated())) {

@@ -34,6 +34,12 @@ http://back-local.wimm.com:8080
 
 ## More
 
+Execute unit tests : 
+
+```bash
+composer test
+```
+
 Mysql container available here :
 
 ```bash

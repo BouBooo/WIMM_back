@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Plaid;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +14,8 @@ use TomorrowIdeas\Plaid\PlaidRequestException;
 
 class TokenAccessController extends Controller
 {
+    use ApiResponse;
+
     private Plaid $client;
 
     public function __construct()

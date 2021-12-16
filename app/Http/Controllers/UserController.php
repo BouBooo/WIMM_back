@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,8 +9,6 @@ use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class UserController extends Controller
 {
-    use ApiResponse;
-
     public function __construct()
     {
         $this->middleware('jwt.verify');
@@ -19,7 +16,9 @@ class UserController extends Controller
 
     public function userProfile(): JsonResponse
     {
-        return response()->json(auth()->user());
+        return $this->respond('User data', [
+            'user' =>auth()->user()
+        ]);
     }
 
     public function update(Request $request): JsonResponse
@@ -34,14 +33,13 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
+            return $this->respondWithError($validator->errors());
         }
 
         $user->update($request->all());
 
-        return response()->json([
-            'message' => 'User successfully updated',
+        return $this->respond('User successfully updated', [
             'user' => $user->fresh()
-        ], ResponseAlias::HTTP_OK);
+        ]);
     }
 }

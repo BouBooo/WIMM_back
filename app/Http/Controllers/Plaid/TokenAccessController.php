@@ -2,31 +2,14 @@
 
 namespace App\Http\Controllers\Plaid;
 
-use App\Http\Controllers\Controller;
-use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use TomorrowIdeas\Plaid\Entities\User;
-use TomorrowIdeas\Plaid\Plaid;
 use TomorrowIdeas\Plaid\PlaidRequestException;
 
-class TokenAccessController extends Controller
+class TokenAccessController extends AbstractPlaidController
 {
-    use ApiResponse;
-
-    private Plaid $client;
-
-    public function __construct()
-    {
-        $this->client = new Plaid(
-            config('services.plaid.client_id'),
-            config('services.plaid.secret'),
-            'sandbox'
-        );
-    }
-
     public function createLinkToken(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -40,7 +23,7 @@ class TokenAccessController extends Controller
         $locale = app()->getLocale();
 
         try {
-            $response = $this->client->tokens->create(
+            $response = $this->getClient()->tokens->create(
                 'Sandbox Plaid Test App',
                 $locale,
                 [strtoupper($locale)],
@@ -67,13 +50,20 @@ class TokenAccessController extends Controller
         }
 
         try {
-            $response = $this->client->items->exchangeToken($validator->validated()['public_token']);
+            $response = $this->getClient()->items->exchangeToken($validator->validated()['public_token']);
         } catch (PlaidRequestException $e) {
             return $this->respondWithError($e->getMessage(), null, $e->getCode());
         }
 
+        $accessToken = $response->access_token;
+
+        auth()->user()->update([
+            'plaidAccessToken' => $accessToken,
+            'hasBankSelected' => true,
+        ]);
+
         return $this->respond('Plaid access token created', [
-            'accessToken' => $response->access_token
+            'accessToken' => $accessToken
         ]);
     }
 }

@@ -7,8 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 trait ApiResponse {
 
-    static $success = 'success';
-    static $error = 'error';
+    public static string $success = 'success';
+    public static string $error = 'error';
 
     protected function respond(string $message, $data = [], int $httpCode = Response::HTTP_OK, string $status = null): JsonResponse
     {

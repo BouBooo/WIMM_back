@@ -33,8 +33,8 @@ Route::group([
 ], static function ($router) {
     Route::get('/user-profile', [UserController::class, 'userProfile']);
     Route::post('/user-profile', [UserController::class, 'update']);
-    Route::post('/link-token/create', [TokenAccessController::class, 'createLinkToken']);
-    Route::post('/public-token/exchange', [TokenAccessController::class, 'exchangePublicToken']);
+    Route::post('/plaid/link-token/create', [TokenAccessController::class, 'createLinkToken']);
+    Route::post('/plaid/public-token/exchange', [TokenAccessController::class, 'exchangePublicToken']);
 });
 
 Route::any('{any}', static function () {

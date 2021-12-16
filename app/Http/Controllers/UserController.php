@@ -17,7 +17,7 @@ class UserController extends Controller
     public function userProfile(): JsonResponse
     {
         return $this->respond('User data', [
-            'user' =>auth()->user()
+            'user' => auth()->user()
         ]);
     }
 
@@ -33,7 +33,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->respondWithError($validator->errors());
+            return $this->respondWithError($validator->errors()->first());
         }
 
         $user->update($request->all());

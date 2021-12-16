@@ -23,11 +23,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->respondWithError('Validation errors', $validator->errors());
+            return $this->respondWithError($validator->getMessageBag()->first());
         }
 
         if (!$token = auth()->attempt($validator->validated())) {
-            return $this->respondWithError('Invalid credentials', null, ResponseAlias::HTTP_UNAUTHORIZED);
+            return $this->respondWithError('Invalid credentials', [], ResponseAlias::HTTP_UNAUTHORIZED);
         }
 
         return $this->createNewToken($token);
@@ -43,7 +43,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->respondWithError('Validation errors', $validator->errors());
+            return $this->respondWithError($validator->getMessageBag()->first());
         }
 
         $user = User::create(array_merge(

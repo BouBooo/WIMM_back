@@ -46,13 +46,13 @@ class TokenAccessController extends AbstractPlaidController
         ]);
 
         if ($validator->fails()) {
-            return $this->respondWithError('Validation errors', $validator->errors());
+            return $this->respondWithError($validator->getMessageBag()->first());
         }
 
         try {
             $response = $this->getClient()->items->exchangeToken($validator->validated()['public_token']);
         } catch (PlaidRequestException $e) {
-            return $this->respondWithError($e->getMessage(), null, $e->getCode());
+            return $this->respondWithError($e->getMessage(), [], $e->getCode());
         }
 
         $accessToken = $response->access_token;

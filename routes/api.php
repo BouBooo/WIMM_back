@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Plaid\AccountController;
 use App\Http\Controllers\Plaid\TokenAccessController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +35,7 @@ Route::group([
     Route::post('/user-profile', [UserController::class, 'update']);
     Route::post('/plaid/link-token/create', [TokenAccessController::class, 'createLinkToken']);
     Route::post('/plaid/public-token/exchange', [TokenAccessController::class, 'exchangePublicToken']);
+    Route::get('/plaid/auth/get', [AccountController::class, 'authData']);
 });
 
 Route::any('{any}', static function () {

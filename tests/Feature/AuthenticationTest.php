@@ -16,6 +16,8 @@ class AuthenticationTest extends TestCase
     private const REGISTER_ROUTE = "/auth/register";
     private const LOGIN_ROUTE = "/auth/login";
 
+    private const DEFAULT_USER_ATTRIBUTES = ["id", "email", "firstName", "lastName", "email_verified_at", "hasBankSelected", "plaidAccessToken", "created_at", "updated_at"];
+
     public function testRequiredFieldsForRegistration(): void
     {
         $this->jsonRequest(Request::METHOD_POST, self::REGISTER_ROUTE)
@@ -39,10 +41,7 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, self::REGISTER_ROUTE, $userData)
             ->assertStatus(Response::HTTP_CREATED)
-            ->assertJsonStructure([
-                "message",
-                "user" => ['firstName', 'lastName', 'email', 'created_at', 'updated_at', 'id'],
-            ]);
+            ->assertJsonStructure(["message", "user" => ["id", "email", "firstName", "lastName", "created_at", "updated_at"]]);
     }
 
     public function testRequiredFieldsForLogin(): void
@@ -82,12 +81,7 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, self::LOGIN_ROUTE, $userData)
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure([
-                "access_token",
-                "token_type",
-                "expires_in",
-                "user" => ["id", "email", "firstName", "lastName", "email_verified_at", "created_at", "updated_at"]
-            ]);
+            ->assertJsonStructure(["access_token", "token_type", "expires_in", "user" => self::DEFAULT_USER_ATTRIBUTES]);
     }
 
     public function testSuccessfulLogout(): void
@@ -98,5 +92,15 @@ class AuthenticationTest extends TestCase
         $this->jsonRequest(Request::METHOD_POST, '/auth/logout', [], ['Authorization' => 'Bearer ' . $token])
             ->assertStatus(Response::HTTP_OK)
             ->assertExactJson(['message' => 'User successfully signed out']);
+    }
+
+    public function testSuccessfulRefresh(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $this->jsonRequest(Request::METHOD_POST, '/auth/refresh', [], ['Authorization' => 'Bearer ' . $token])
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJsonStructure(["access_token", "token_type", "expires_in", "user" => self::DEFAULT_USER_ATTRIBUTES]);
     }
 }

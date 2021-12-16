@@ -31,7 +31,7 @@ class TokenAccessController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
+            return $this->respondWithError('Validation errors', $validator->errors());
         }
 
         $locale = app()->getLocale();
@@ -45,13 +45,12 @@ class TokenAccessController extends Controller
                 ['auth'],
             );
         } catch (PlaidRequestException $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode());
+            return $this->respondWithError($e->getMessage(), null, $e->getCode());
         }
 
-        return response()->json([
-            'message' => 'Plaid public token created',
-            'linkToken' => $response->link_token,
-        ], ResponseAlias::HTTP_OK);
+        return $this->respond('Plaid public token created', [
+            'linkToken' => $response->link_token
+        ]);
     }
 
     public function exchangePublicToken(Request $request): JsonResponse
@@ -61,18 +60,17 @@ class TokenAccessController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
+            return $this->respondWithError('Validation errors', $validator->errors());
         }
 
         try {
             $response = $this->client->items->exchangeToken($validator->validated()['public_token']);
         } catch (PlaidRequestException $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode());
+            return $this->respondWithError($e->getMessage(), null, $e->getCode());
         }
 
-        return response()->json([
-            'message' => 'Plaid access token created',
-            'accessToken' => $response->access_token,
-        ], ResponseAlias::HTTP_OK);
+        return $this->respond('Plaid access token created', [
+            'accessToken' => $response->access_token
+        ]);
     }
 }

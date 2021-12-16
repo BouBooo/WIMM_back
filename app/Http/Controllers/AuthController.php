@@ -23,11 +23,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
+            return $this->respondWithError('Validation errors', $validator->errors());
         }
 
         if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], ResponseAlias::HTTP_UNAUTHORIZED);
+            return $this->respondWithError('Invalid credentials', null, ResponseAlias::HTTP_UNAUTHORIZED);
         }
 
         return $this->createNewToken($token);
@@ -43,7 +43,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
+            return $this->respondWithError('Validation errors', $validator->errors(), ResponseAlias::HTTP_BAD_REQUEST);
         }
 
         $user = User::create(array_merge(
@@ -51,17 +51,14 @@ class AuthController extends Controller
             ['password' => bcrypt($request->password)]
         ));
 
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
-        ], ResponseAlias::HTTP_CREATED);
+        return $this->respond('User successfully registered', $user, ResponseAlias::HTTP_CREATED);
     }
 
     public function logout(): JsonResponse
     {
         auth()->logout();
 
-        return response()->json(['message' => 'User successfully signed out']);
+        return $this->respond('Successfully logged out');
     }
 
     public function refresh(): JsonResponse
@@ -71,7 +68,7 @@ class AuthController extends Controller
 
     private function createNewToken(string $token): JsonResponse
     {
-        return response()->json([
+        return $this->respond('Successfully logged in', [
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,

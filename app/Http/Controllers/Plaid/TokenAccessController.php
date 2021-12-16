@@ -70,9 +70,16 @@ class TokenAccessController extends Controller
             return response()->json(['message' => $e->getMessage()], $e->getCode());
         }
 
+        $accessToken = $response->access_token;
+
+        auth()->user()->update([
+            'plaidAccessToken' => $accessToken,
+            'hasBankSelected' => true,
+        ]);
+
         return response()->json([
             'message' => 'Plaid access token created',
-            'accessToken' => $response->access_token,
+            'accessToken' => $accessToken,
         ], ResponseAlias::HTTP_OK);
     }
 }

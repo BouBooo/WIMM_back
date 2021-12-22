@@ -53,7 +53,7 @@
             "vendor/bin/phpunit"
         ],
         "test:coverage": [
-            "vender/bin/phpunit --coverage-text"
+            "vendor/bin/phpunit --coverage-text"
         ]
     },
     "extra": {

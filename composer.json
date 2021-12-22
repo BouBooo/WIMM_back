@@ -53,6 +53,7 @@
             "vendor/bin/phpunit"
         ],
         "test:coverage": [
+            "@putenv XDEBUG_MODE=coverage",
             "vendor/bin/phpunit --coverage-text"
         ]
     },

@@ -1,0 +1,30 @@
+image: gitlab/dind
+
+stages:
+  - test
+
+test: 
+  stage: test
+  image: php:8.0-fpm
+  before_script:
+    - apt-get update && apt-get install -y zip libzip-dev unzip git curl libfreetype6-dev libjpeg62-turbo-dev libxslt-dev libpng-dev && docker-php-ext-install -j$(nproc) gd xsl intl zip
+    - curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer install
+  script:
+      - composer test
+  only:
+    - develop
+
+coverage: 
+  stage: test
+  image: php:8.0-fpm
+  before_script:
+    - apt-get update && apt-get install -y zip libzip-dev unzip git curl libfreetype6-dev libjpeg62-turbo-dev libxslt-dev libpng-dev && docker-php-ext-install -j$(nproc) gd xsl intl zip
+    - pecl install xdebug && docker-php-ext-enable xdebug
+    - curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer install
+  script:
+      - composer test:coverage
+  coverage: /^\s*Lines:\s*([\d\.]+)/
+  only:
+    - develop

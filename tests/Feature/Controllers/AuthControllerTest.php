@@ -82,20 +82,14 @@ class AuthControllerTest extends TestCase
 
     public function testSuccessfulLogout(): void
     {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        $this->jsonRequest(Request::METHOD_POST, '/auth/logout', [], ['Authorization' => 'Bearer ' . $token])
+        $this->makeAuthenticatedRequest(Request::METHOD_POST, '/auth/logout')
             ->assertStatus(Response::HTTP_OK)
             ->assertExactJson(['status' => self::$success, 'message' => 'Successfully logged out', 'data' => []]);
     }
 
     public function testSuccessfulRefresh(): void
     {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        $this->jsonRequest(Request::METHOD_POST, '/auth/refresh', [], ['Authorization' => 'Bearer ' . $token])
+        $this->makeAuthenticatedRequest(Request::METHOD_POST, '/auth/refresh')
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure(["status", "message", "data" => self::CONNECTED_RESPONSE_ATTRIBUTES]);
     }

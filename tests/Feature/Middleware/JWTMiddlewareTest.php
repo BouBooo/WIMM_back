@@ -2,11 +2,9 @@
 
 namespace Tests\Feature\Middleware;
 
-use App\Models\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use JWTAuth;
 
 class JWTMiddlewareTest extends TestCase
 {
@@ -23,9 +21,7 @@ class JWTMiddlewareTest extends TestCase
 
     public function testInvalidToken(): void
     {
-        $this->jsonRequest(Request::METHOD_GET, self::USER_PROFILE_ROUTE, [], [
-            'Authorization' => 'Bearer ' . 'blablabla'
-        ])
+        $this->jsonRequest(Request::METHOD_GET, self::USER_PROFILE_ROUTE, [], ['Authorization' => 'Bearer ' . 'blablabla'])
             ->assertStatus(Response::HTTP_FORBIDDEN)
             ->assertExactJson([
                 'status' => self::$error,
@@ -34,13 +30,9 @@ class JWTMiddlewareTest extends TestCase
             ]);
     }
 
-    public function testSuccessfulJWTToken(): void
+    public function testSuccessfulAuthenticatedRequestWithToken(): void
     {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        $this->jsonRequest(Request::METHOD_GET, self::USER_PROFILE_ROUTE, [], [
-            'Authorization' => 'Bearer ' . $token
-        ])->assertStatus(Response::HTTP_OK);
+        $this->makeAuthenticatedRequest(Request::METHOD_GET, self::USER_PROFILE_ROUTE)
+            ->assertStatus(Response::HTTP_OK);
     }
 }

@@ -42,5 +42,6 @@ Route::any('{any}', static function () {
     return response()->json([
         'status' => 'error',
         'message' => 'Resource not found',
+        'data' => [],
     ], Response::HTTP_NOT_FOUND);
 })->where('any', '.*');

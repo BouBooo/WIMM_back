@@ -1,22 +1,16 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
-use App\Http\Traits\ApiResponse;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use JWTAuth;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
-use JWTAuth;
+use function bcrypt;
 
-class AuthenticationTest extends TestCase
+class AuthControllerTest extends TestCase
 {
-    use RefreshDatabase, ApiResponse;
-
-    private const REGISTER_ROUTE = "/auth/register";
-    private const LOGIN_ROUTE = "/auth/login";
-
     private const DEFAULT_USER_ATTRIBUTES = ["id", "email", "firstName", "lastName", "email_verified_at", "hasBankSelected", "plaidAccessToken", "created_at", "updated_at"];
     private const CONNECTED_RESPONSE_ATTRIBUTES = ["access_token", "token_type", "expires_in", "user"];
 

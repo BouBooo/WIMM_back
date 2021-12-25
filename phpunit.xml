@@ -28,5 +28,7 @@
         <server name="SESSION_DRIVER" value="array"/>
         <server name="TELESCOPE_ENABLED" value="false"/>
         <server name="JWT_SECRET" value="secret"/>
+        <server name="PLAID_CLIENT_ID" value="61b35f1a32f32f001a5d03a6" />
+        <server name="PLAID_SECRET" value="a262616fb3decc6fb14daefbb114b0" />
     </php>
 </phpunit>

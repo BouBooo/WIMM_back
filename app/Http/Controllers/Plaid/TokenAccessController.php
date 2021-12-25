@@ -17,7 +17,7 @@ class TokenAccessController extends AbstractPlaidController
         ]);
 
         if ($validator->fails()) {
-            return $this->respondWithError('Validation errors', $validator->getMessageBag()->first());
+            return $this->respondWithError($validator->getMessageBag()->first());
         }
 
         $locale = app()->getLocale();

@@ -25,10 +25,10 @@ class UserController extends Controller
         $user = auth()->user();
 
         $validator = Validator::make($request->all(), [
-            'firstName' => 'required|string|between:2,100',
-            'lastName' => 'required|string|between:2,100',
+            'firstName' => 'string|between:2,100',
+            'lastName' => 'string|between:2,100',
             'email' => 'unique:users,email,'. $user->id .',id',
-            'password' => 'required|string|min:6',
+            'password' => 'string|min:6',
         ]);
 
         if ($validator->fails()) {

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Traits\ApiResponse;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,22 +12,22 @@ use JWTAuth;
 
 class AuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, ApiResponse;
 
     private const REGISTER_ROUTE = "/auth/register";
     private const LOGIN_ROUTE = "/auth/login";
 
     private const DEFAULT_USER_ATTRIBUTES = ["id", "email", "firstName", "lastName", "email_verified_at", "hasBankSelected", "plaidAccessToken", "created_at", "updated_at"];
+    private const CONNECTED_RESPONSE_ATTRIBUTES = ["access_token", "token_type", "expires_in", "user"];
 
     public function testRequiredFieldsForRegistration(): void
     {
         $this->jsonRequest(Request::METHOD_POST, self::REGISTER_ROUTE)
             ->assertStatus(Response::HTTP_BAD_REQUEST)
             ->assertExactJson([
-                "firstName" => ["The first name field is required."],
-                "lastName" => ["The last name field is required."],
-                "email" => ["The email field is required."],
-                "password" => ["The password field is required."]
+                'status' => self::$error,
+                "message" => "The first name field is required.",
+                "data" => [],
             ]);
     }
 
@@ -41,7 +42,7 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, self::REGISTER_ROUTE, $userData)
             ->assertStatus(Response::HTTP_CREATED)
-            ->assertJsonStructure(["message", "user" => ["id", "email", "firstName", "lastName", "created_at", "updated_at"]]);
+            ->assertJsonStructure(["status", "message", "data" => ["id", "email", "firstName", "lastName", "created_at", "updated_at"]]);
     }
 
     public function testRequiredFieldsForLogin(): void
@@ -49,8 +50,9 @@ class AuthenticationTest extends TestCase
         $this->jsonRequest(Request::METHOD_POST, self::LOGIN_ROUTE)
             ->assertStatus(Response::HTTP_BAD_REQUEST)
             ->assertExactJson([
-                "email" => ["The email field is required."],
-                "password" => ["The password field is required."],
+                "status" => self::$error,
+                "message" => "The email field is required.",
+                "data" => [],
             ]);
     }
 
@@ -65,7 +67,7 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, self::LOGIN_ROUTE, $userData)
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
-            ->assertExactJson(['error' => 'Unauthorized']);
+            ->assertExactJson(['status' => self::$error, 'message' => 'Invalid credentials', 'data' => []]);
     }
 
     public function testSuccessfulLogin(): void
@@ -81,7 +83,7 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, self::LOGIN_ROUTE, $userData)
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure(["access_token", "token_type", "expires_in", "user" => self::DEFAULT_USER_ATTRIBUTES]);
+            ->assertJsonStructure(["status", "message", "data" => self::CONNECTED_RESPONSE_ATTRIBUTES]);
     }
 
     public function testSuccessfulLogout(): void
@@ -91,7 +93,7 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, '/auth/logout', [], ['Authorization' => 'Bearer ' . $token])
             ->assertStatus(Response::HTTP_OK)
-            ->assertExactJson(['message' => 'User successfully signed out']);
+            ->assertExactJson(['status' => self::$success, 'message' => 'Successfully logged out', 'data' => []]);
     }
 
     public function testSuccessfulRefresh(): void
@@ -101,6 +103,6 @@ class AuthenticationTest extends TestCase
 
         $this->jsonRequest(Request::METHOD_POST, '/auth/refresh', [], ['Authorization' => 'Bearer ' . $token])
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure(["access_token", "token_type", "expires_in", "user" => self::DEFAULT_USER_ATTRIBUTES]);
+            ->assertJsonStructure(["status", "message", "data" => self::CONNECTED_RESPONSE_ATTRIBUTES]);
     }
 }

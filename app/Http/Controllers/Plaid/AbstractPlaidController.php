@@ -18,7 +18,7 @@ abstract class AbstractPlaidController extends Controller
         );
     }
 
-    public function getClient(): Plaid
+    protected function getClient(): Plaid
     {
         return $this->client;
     }

@@ -17,7 +17,7 @@ class TokenAccessController extends AbstractPlaidController
         ]);
 
         if ($validator->fails()) {
-            return $this->respondWithError('Validation errors', $validator->errors());
+            return $this->respondWithError('Validation errors', $validator->getMessageBag()->first());
         }
 
         $locale = app()->getLocale();
@@ -31,7 +31,7 @@ class TokenAccessController extends AbstractPlaidController
                 ['auth'],
             );
         } catch (PlaidRequestException $e) {
-            return $this->respondWithError($e->getMessage(), null, $e->getCode());
+            return $this->respondWithError($e->getMessage(), [], $e->getCode());
         }
 
         return $this->respond('Plaid public token created', [
@@ -59,7 +59,7 @@ class TokenAccessController extends AbstractPlaidController
 
         auth()->user()->update([
             'plaidAccessToken' => $accessToken,
-            'hasBankSelected' => true,
+            'hasBankSelected' => true, // Now, user has selected a bank.
         ]);
 
         return $this->respond('Plaid access token created', [

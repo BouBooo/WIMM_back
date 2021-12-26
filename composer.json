@@ -54,7 +54,7 @@
         ],
         "test:coverage": [
             "@putenv XDEBUG_MODE=coverage",
-            "vendor/bin/phpunit --coverage-text"
+            "vendor/bin/phpunit --coverage-text --colors=never"
         ]
     },
     "extra": {

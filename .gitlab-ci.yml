@@ -25,6 +25,6 @@ coverage:
     - composer install
   script:
       - composer test:coverage
-  coverage: /\n(\s*)Lines:\s*([\d\.]+)/
+  coverage: /^\s*Lines:\s*([\d\.]+)/
   only:
     - develop

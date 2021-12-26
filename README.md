@@ -1,3 +1,5 @@
+[![Pipeline Status](https://gitlab.com/where-is-my-moneyy/back/badges/develop/pipeline.svg)](https://gitlab.com/where-is-my-moneyy/back/-/pipelines)
+[![coverage report](https://gitlab.com/where-is-my-moneyy/back/badges/develop/coverage.svg)](https://gitlab.com/where-is-my-moneyy/back/-/pipelines)
 # Where's my money 🥵 - back
 
 ### Prerequisites

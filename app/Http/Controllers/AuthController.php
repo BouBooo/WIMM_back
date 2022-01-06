@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh']]);
     }
 
     public function login(Request $request): JsonResponse
@@ -63,12 +63,12 @@ class AuthController extends Controller
 
     public function refresh(): JsonResponse
     {
-        return $this->createNewToken(auth()->refresh());
+        return $this->createNewToken(auth()->refresh(), 'Token successfully refreshed');
     }
 
-    private function createNewToken(string $token): JsonResponse
+    private function createNewToken(string $token, string $message = 'Successfully logged in'): JsonResponse
     {
-        return $this->respond('Successfully logged in', [
+        return $this->respond($message, [
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,

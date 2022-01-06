@@ -22,13 +22,15 @@ class AccountController extends AbstractPlaidController
             $options = ['account_ids' => $accountIds];
         }
 
+        $plaidAccessToken = auth()->user()->plaidAccessToken;
+
         try {
-            $auth = $this->getClient()->auth->get(auth()->user()->accessToken, $options);
+            $auth = $this->getClient()->auth->get($plaidAccessToken, $options);
         } catch (PlaidRequestException $e) {
             return $this->respondWithError($e->getMessage(), [], $e->getCode());
         }
 
-        return $this->respond('Plaid Auth account', [
+        return $this->respond('Plaid Auth accounts', [
             'accounts' => $auth->accounts,
         ]);
     }

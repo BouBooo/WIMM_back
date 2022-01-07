@@ -49,3 +49,10 @@ services:
         volumes:
             - ./:/var/www
             - ./docker-compose/nginx:/etc/nginx/conf.d/
+
+    mailhog:
+        image: mailhog/mailhog:latest
+        container_name: wimm-mailhog
+        ports:
+            - "1025:1025"
+            - "8025:8025"

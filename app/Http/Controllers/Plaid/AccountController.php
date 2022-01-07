@@ -57,7 +57,7 @@ class AccountController extends AbstractPlaidController
         try {
             $response = $this->getClient()->accounts->getIdentity($plaidAccessToken, $options);
         } catch (PlaidRequestException $e) {
-            return $this->respondWithError($e->getMessage(), [], $e->getCode());
+            return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
         }
 
         $data = [];

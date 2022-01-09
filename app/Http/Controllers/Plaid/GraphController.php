@@ -33,19 +33,17 @@ class GraphController extends AbstractPlaidController
 
         $period = $data['period'];
         $count = $data['count'];
-
         $dates = $this->transactionService->getDatesByPeriod($period, $count);
-        $plaidAccessToken = auth()->user()->plaidAccessToken;
 
         try {
             $response = $this->getClient()->transactions->list(
-                $plaidAccessToken, $dates['startDate'], $dates['endDate'],
+                auth()->user()->plaidAccessToken, $dates['startDate'], $dates['endDate'],
             );
         } catch (PlaidRequestException $e) {
             return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
         }
 
-        $transactions = $this->formatter->format($response->transactions, $period);
+        $transactions = $this->formatter->format($response->transactions, $period, $count);
 
         return $this->respond('Get activity graph', [
             'transactions' => $transactions,

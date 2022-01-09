@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Plaid\AccountController;
+use App\Http\Controllers\Plaid\GraphController;
 use App\Http\Controllers\Plaid\TokenAccessController;
 use App\Http\Controllers\Plaid\TransactionController;
 use App\Http\Controllers\UserController;
@@ -34,6 +35,7 @@ Route::group([
 ], static function ($router) {
     Route::get('/user-profile', [UserController::class, 'userProfile']);
     Route::post('/user-profile', [UserController::class, 'update']);
+    Route::get('/activity/graph', [GraphController::class, 'graphActivity']);
 });
 
 Route::group([

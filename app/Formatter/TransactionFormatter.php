@@ -23,9 +23,9 @@ final class TransactionFormatter implements FormatterInterface
 
         foreach ($transactions as $transaction) {
             $formattedDayData[] = [
-                'label' => Carbon::parse($transaction['authorized-date'])->format('D'),
-                'spent' => max($transaction['amount'], 0),
-                'income' => min($transaction['amount'], 0),
+                'label' => Carbon::parse($transaction->date ?? $transaction->authorized_date),
+                'spent' => max($transaction->amount, 0),
+                'income' => min($transaction->amount, 0),
             ];
         }
 
@@ -38,11 +38,11 @@ final class TransactionFormatter implements FormatterInterface
         $weeks = array_chunk($transactions, $count); // Split by week.
 
         foreach ($weeks as $week) {
-            $firstWeekDay = array_reverse($week)[0];
-            $weekAmounts = array_map(static fn ($day) => $day['amount'] ?? 0, $week);
+            $firstWeekDay = $week[0];
+            $weekAmounts = array_map(static fn ($day) => $day->amount ?? 0, $week);
 
             $formattedWeekData[] = [
-                'label' => 'Semaine du ' . Carbon::parse($firstWeekDay['authorized-date'])->format('d/m'),
+                'label' => 'Semaine du ' . Carbon::parse($firstWeekDay->date ?? $firstWeekDay->authorized_date)->translatedFormat('d/m'),
                 'spent' => array_sum(array_filter($weekAmounts, static fn ($amount) => $amount >= 0)),
                 'income' => -1 * abs(array_sum(array_filter($weekAmounts, static fn ($amount) => $amount < 0))),
             ];
@@ -54,6 +54,19 @@ final class TransactionFormatter implements FormatterInterface
     private function formatMonth(array $transactions, int $count): array
     {
         $formattedMonthData = [];
+
+        $months = array_chunk($transactions, count($transactions) - $count); // Split by month.
+
+        foreach ($months as $month) {
+            $firstWeekDay = array_reverse($month)[0];
+            $monthAmounts = array_map(static fn ($day) => $day->amount ?? 0, $month);
+
+            $formattedMonthData[] = [
+                'label' => ucfirst(Carbon::parse($firstWeekDay->date ?? $firstWeekDay->authorized_date)->translatedFormat('F')),
+                'spent' => array_sum(array_filter($monthAmounts, static fn ($amount) => $amount >= 0)),
+                'income' => -1 * abs(array_sum(array_filter($monthAmounts, static fn ($amount) => $amount < 0))),
+            ];
+        }
 
         return $formattedMonthData;
     }

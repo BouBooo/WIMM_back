@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use TomorrowIdeas\Plaid\PlaidRequestException;
 
-class GraphController extends AbstractPlaidController
+final class GraphController extends AbstractPlaidController
 {
     public function __construct(
         private TransactionService $transactionService,
@@ -45,8 +45,6 @@ class GraphController extends AbstractPlaidController
 
         $transactions = $this->formatter->format($response->transactions, $period, $count);
 
-        return $this->respond('Get activity graph', [
-            'transactions' => $transactions,
-        ]);
+        return $this->respond('Get activity graph', $transactions);
     }
 }

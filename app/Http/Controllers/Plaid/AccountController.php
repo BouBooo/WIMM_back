@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use TomorrowIdeas\Plaid\PlaidRequestException;
 
-class AccountController extends AbstractPlaidController
+final class AccountController extends AbstractPlaidController
 {
     public function list(Request $request): JsonResponse
     {

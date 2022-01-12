@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
-class AuthController extends Controller
+final class AuthController extends Controller
 {
     public function __construct()
     {

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use TomorrowIdeas\Plaid\PlaidRequestException;
 
-class AccountController extends AbstractPlaidController
+final class AccountController extends AbstractPlaidController
 {
     public function list(Request $request): JsonResponse
     {
@@ -57,7 +57,7 @@ class AccountController extends AbstractPlaidController
         try {
             $response = $this->getClient()->accounts->getIdentity($plaidAccessToken, $options);
         } catch (PlaidRequestException $e) {
-            return $this->respondWithError($e->getMessage(), [], $e->getCode());
+            return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
         }
 
         $data = [];

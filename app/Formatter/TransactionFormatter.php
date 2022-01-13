@@ -19,17 +19,26 @@ final class TransactionFormatter implements FormatterInterface
 
     private function formatDay(array $transactions): array
     {
-        $formattedDayData = [];
-
+        $daysData = [];
         foreach ($transactions as $transaction) {
-            $formattedDayData[] = [
-                'label' => Carbon::parse($transaction->date ?? $transaction->authorized_date),
-                'spent' => max($transaction->amount, 0),
-                'income' => min($transaction->amount, 0),
-            ];
+            $date = $transaction->date ?? $transaction->authorized_date;
+            $label = ucfirst(Carbon::parse($date)->translatedFormat('l'));
+            $amount = $transaction->amount;
+
+            if (isset($daysData[$date]) && $daysData[$date]['date'] === $date) {
+                $daysData[$date]['spent'] += max($amount, 0);
+                $daysData[$date]['income'] += min($amount, 0);
+            } else {
+                $daysData[$date] = [
+                    'date' => $date,
+                    'label' => $label,
+                    'spent' => max($amount, 0),
+                    'income' => min($amount, 0),
+                ];
+            }
         }
 
-        return $formattedDayData;
+        return $this->harmonize($daysData);
     }
 
     private function formatWeek(array $transactions, int $count): array
@@ -76,5 +85,19 @@ final class TransactionFormatter implements FormatterInterface
         $formattedYearData = [];
 
         return $formattedYearData;
+    }
+
+    private function harmonize(array $data): array
+    {
+        $formattedData = [];
+        foreach ($data as $day) {
+            $formattedData[] = [
+                'label' => $day['label'],
+                'spent' => $day['spent'],
+                'income' => $day['income'],
+            ];
+        }
+
+        return $formattedData;
     }
 }

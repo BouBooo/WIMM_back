@@ -4,22 +4,36 @@ namespace App\Formatter;
 
 use App\Enums\Period;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 final class TransactionFormatter implements FormatterInterface
 {
     public function format(array $data, string $mode, int $count): array
     {
         return match ($mode) {
-            Period::DAY => $this->formatDay($data),
+            Period::DAY => $this->formatDay($data, $count),
             Period::WEEK => $this->formatWeek($data, $count),
             Period::MONTH => $this->formatMonth($data, $count),
             Period::YEAR => $this->formatYear($data, $count),
         };
     }
 
-    private function formatDay(array $transactions): array
+    private function formatDay(array $transactions, int $count): array
     {
         $daysData = [];
+        $today = new \DateTime();
+        $period = CarbonPeriod::create((new \DateTime())->modify("-$count days")->format("Y-m-d"), $today->format("Y-m-d"))->toArray();
+
+        foreach (array_reverse($period) as $date) {
+            $formattedDate = $date->format("Y-m-d");
+            $daysData[$formattedDate] = [
+                'date' => $formattedDate,
+                'label' => ucfirst(Carbon::parse($date)->translatedFormat('l')),
+                'spent' => 0,
+                'income' => 0,
+            ];
+        }
+
         foreach ($transactions as $transaction) {
             $date = $transaction->date ?? $transaction->authorized_date;
             $label = ucfirst(Carbon::parse($date)->translatedFormat('l'));

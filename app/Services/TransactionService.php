@@ -33,12 +33,15 @@ class TransactionService
             Carbon::today()->format("Y-m-d")
         )->toArray();
 
+        $moreThanOneWeek = count($period) > 7;
+
         foreach (array_reverse($period) as $date) {
             $formattedDate = $date->format("Y-m-d");
+            $parsedDate = Carbon::parse($date);
 
             $days[$formattedDate] = [
                 'date' => $formattedDate,
-                'label' => ucfirst(Carbon::parse($date)->translatedFormat('l')),
+                'label' => $moreThanOneWeek ? $parsedDate->translatedFormat('d/m') : ucfirst($parsedDate->translatedFormat('l')),
                 'spent' => 0,
                 'income' => 0,
             ];
@@ -67,8 +70,8 @@ class TransactionService
     {
         $result = [];
 
-        foreach($data as $transac) {
-            $result[$transac->account_id][] = $transac;
+        foreach ($data as $transaction) {
+            $result[$transaction->account_id][] = $transaction;
         }
 
         return $result;

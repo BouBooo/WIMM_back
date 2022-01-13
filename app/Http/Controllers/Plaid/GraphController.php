@@ -65,6 +65,7 @@ final class GraphController extends AbstractPlaidController
             $result[$account->account_id] = [
                 'name' => $account->name,
                 'balance' => $account->balances->current,
+                'preview' => [],
             ];
         }
 

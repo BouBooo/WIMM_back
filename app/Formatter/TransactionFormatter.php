@@ -46,11 +46,10 @@ final class TransactionFormatter implements FormatterInterface
         $weeks = array_chunk($transactions, $count); // Split by week.
 
         foreach ($weeks as $week) {
-            $firstWeekDay = $week[0];
             $weekAmounts = array_map(static fn ($day) => $day->amount ?? 0, $week);
 
             $formattedWeekData[] = [
-                'label' => 'Semaine du ' . Carbon::parse($firstWeekDay->date)->translatedFormat('d/m'),
+                'label' => 'Semaine du ' . Carbon::parse($week[0]->date)->translatedFormat('d/m'),
                 'spent' => array_sum(array_filter($weekAmounts, static fn ($amount) => $amount >= 0)),
                 'income' => -1 * abs(array_sum(array_filter($weekAmounts, static fn ($amount) => $amount < 0))),
             ];

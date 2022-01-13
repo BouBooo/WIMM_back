@@ -46,4 +46,22 @@ class TransactionService
 
         return $days;
     }
+
+    public function splitByMonth(array $data): array
+    {
+        $result = [];
+        $monthsSplited = [];
+
+        foreach ($data as $transaction) {
+            $date = new \DateTime($transaction->date);
+            $month = $date->format('F');
+            $monthsSplited[$month][] = $transaction->amount;
+        }
+
+        foreach ($monthsSplited as $month => $amounts) {
+            $result[$month] = round(array_sum($amounts), 2);
+        }
+
+        return array_values($result);
+    }
 }

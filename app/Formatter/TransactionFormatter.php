@@ -3,38 +3,37 @@
 namespace App\Formatter;
 
 use App\Enums\Period;
+use App\Services\TransactionService;
 use Carbon\Carbon;
 
 final class TransactionFormatter implements FormatterInterface
 {
+    public function __construct(
+        private TransactionService $transactionService,
+    ) {
+    }
+
     public function format(array $data, string $mode, int $count): array
     {
         return match ($mode) {
-            Period::DAY => $this->formatDay($data),
+            Period::DAY => $this->formatDay($data, $count),
             Period::WEEK => $this->formatWeek($data, $count),
             Period::MONTH => $this->formatMonth($data, $count),
             Period::YEAR => $this->formatYear($data, $count),
         };
     }
 
-    private function formatDay(array $transactions): array
+    private function formatDay(array $transactions, int $count): array
     {
-        $daysData = [];
+        $daysData = $this->transactionService->initPeriodDays($count);
+
         foreach ($transactions as $transaction) {
             $date = $transaction->date ?? $transaction->authorized_date;
-            $label = ucfirst(Carbon::parse($date)->translatedFormat('l'));
             $amount = $transaction->amount;
 
             if (isset($daysData[$date]) && $daysData[$date]['date'] === $date) {
                 $daysData[$date]['spent'] += max($amount, 0);
                 $daysData[$date]['income'] += min($amount, 0);
-            } else {
-                $daysData[$date] = [
-                    'date' => $date,
-                    'label' => $label,
-                    'spent' => max($amount, 0),
-                    'income' => min($amount, 0),
-                ];
             }
         }
 
@@ -57,7 +56,7 @@ final class TransactionFormatter implements FormatterInterface
             ];
         }
 
-        return $formattedWeekData;
+        return $this->harmonize($formattedWeekData);
     }
 
     private function formatMonth(array $transactions, int $count): array
@@ -77,14 +76,14 @@ final class TransactionFormatter implements FormatterInterface
             ];
         }
 
-        return $formattedMonthData;
+        return $this->harmonize($formattedMonthData);
     }
 
     private function formatYear(array $transactions, int $count): array
     {
         $formattedYearData = [];
 
-        return $formattedYearData;
+        return $this->harmonize($formattedYearData);
     }
 
     private function harmonize(array $data): array

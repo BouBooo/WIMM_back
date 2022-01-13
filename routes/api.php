@@ -35,7 +35,6 @@ Route::group([
 ], static function ($router) {
     Route::get('/user-profile', [UserController::class, 'userProfile']);
     Route::post('/user-profile', [UserController::class, 'update']);
-    Route::get('/activity/graph', [GraphController::class, 'graphActivity']);
 });
 
 Route::group([
@@ -47,6 +46,8 @@ Route::group([
     Route::get('/accounts', [AccountController::class, 'list']);
     Route::get('/accounts/identity', [AccountController::class, 'identity']);
     Route::get('/transactions', [TransactionController::class, 'list']);
+    Route::get('/activity/graph', [GraphController::class, 'graphActivity']);
+    Route::get('/balance/graph', [GraphController::class, 'graphBalance']);
 });
 
 Route::any('{any}', static function () {

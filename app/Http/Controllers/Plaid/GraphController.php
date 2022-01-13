@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Plaid;
 
+use App\Enums\Period;
 use App\Formatter\TransactionFormatter;
 use App\Services\TransactionService;
 use Carbon\Carbon;
@@ -34,6 +35,10 @@ final class GraphController extends AbstractPlaidController
 
         $period = $data['period'];
         $count = $data['count'];
+        if (Period::DAY === $period) {
+            $count--;
+        }
+
         $dates = $this->transactionService->getDatesByPeriod($period, $count);
 
         try {

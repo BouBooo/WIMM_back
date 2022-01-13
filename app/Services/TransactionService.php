@@ -12,7 +12,7 @@ class TransactionService
     public function getDatesByPeriod(string $period, int $count): array
     {
         $nbrDays = match ($period) {
-            Period::DAY => $count - 1,
+            Period::DAY => $count,
             Period::WEEK => 7 * $count,
             Period::MONTH => 31 * $count,
             Period::YEAR => 365 * $count,

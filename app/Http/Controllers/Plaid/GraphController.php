@@ -59,25 +59,27 @@ final class GraphController extends AbstractPlaidController
         }
 
         $result = [];
-        foreach ($response->accounts as $account) {
-            try {
-                $transactionsResponse = $this->getClient()->transactions->list(
-                    auth()->user()->plaidAccessToken,
-                    (new \DateTime())->modify("-6 months"),
-                    new \DateTime(),
-                    ['account_ids' => [$account->account_id]],
-                );
-            } catch (PlaidRequestException $e) {
-                return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
-            }
 
-            $result[] = [
+        foreach ($response->accounts as $account) {
+            $result[$account->account_id] = [
                 'name' => $account->name,
                 'balance' => $account->balances->current,
-                'preview' => $this->transactionService->splitByMonth($transactionsResponse->transactions)
             ];
         }
 
-        return $this->respond('Get balance graph', $result);
+        $transactionsResponse = $this->getClient()->transactions->list(
+            auth()->user()->plaidAccessToken,
+            (new \DateTime())->modify("-6 months"),
+            new \DateTime(),
+            ['account_ids' => array_keys($result)],
+        );
+
+        $transactions = $this->transactionService->splitByAccounts($transactionsResponse->transactions);
+
+        foreach ($transactions as $account => $groupedTransactions) {
+            $result[$account]['preview'] = $this->transactionService->splitByMonth($groupedTransactions);
+        }
+
+        return $this->respond('Get balance graph', array_values($result));
     }
 }

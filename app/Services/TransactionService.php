@@ -64,4 +64,15 @@ class TransactionService
 
         return array_values($result);
     }
+
+    public function splitByAccounts(array $data): array
+    {
+        $result = [];
+
+        foreach($data as $transac) {
+            $result[$transac->account_id][] = $transac;
+        }
+
+        return $result;
+    }
 }

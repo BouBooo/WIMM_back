@@ -57,7 +57,7 @@ final class TransactionFormatter implements FormatterInterface
             ];
         }
 
-        return $formattedWeekData;
+        return $this->harmonize($formattedWeekData);
     }
 
     private function formatMonth(array $transactions, int $count): array
@@ -77,14 +77,14 @@ final class TransactionFormatter implements FormatterInterface
             ];
         }
 
-        return $formattedMonthData;
+        return $this->harmonize($formattedMonthData);
     }
 
     private function formatYear(array $transactions, int $count): array
     {
         $formattedYearData = [];
 
-        return $formattedYearData;
+        return $this->harmonize($formattedYearData);
     }
 
     private function harmonize(array $data): array

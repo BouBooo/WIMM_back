@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Controllers\Plaid;
 
-use App\Http\Controllers\Plaid\TokenAccessController;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

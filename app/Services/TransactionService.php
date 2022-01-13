@@ -20,8 +20,8 @@ class TransactionService
         };
 
         return [
-            'startDate' => (new \DateTime())->modify("-$nbrDays days"),
-            'endDate' => new \DateTime(),
+            'startDate' => Carbon::today()->modify("-$nbrDays days"),
+            'endDate' => Carbon::today(),
         ];
     }
 
@@ -29,8 +29,8 @@ class TransactionService
     {
         $days = [];
         $period = CarbonPeriod::create(
-            (new \DateTime())->modify("-$count days")->format("Y-m-d"),
-            (new \DateTime())->format("Y-m-d")
+            Carbon::today()->modify("-$count days")->format("Y-m-d"),
+            Carbon::today()->format("Y-m-d")
         )->toArray();
 
         foreach (array_reverse($period) as $date) {
@@ -53,9 +53,7 @@ class TransactionService
         $monthsSplited = [];
 
         foreach ($data as $transaction) {
-            $date = new \DateTime($transaction->date);
-            $month = $date->format('F');
-            $monthsSplited[$month][] = $transaction->amount;
+            $monthsSplited[Carbon::parse($transaction->date)->format('F')][] = $transaction->amount;
         }
 
         foreach ($monthsSplited as $month => $amounts) {

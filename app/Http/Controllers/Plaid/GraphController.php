@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Plaid;
 
 use App\Formatter\TransactionFormatter;
 use App\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -69,8 +70,8 @@ final class GraphController extends AbstractPlaidController
 
         $transactionsResponse = $this->getClient()->transactions->list(
             auth()->user()->plaidAccessToken,
-            (new \DateTime())->modify("-6 months"),
-            new \DateTime(),
+            Carbon::today()->modify("-6 months"),
+            Carbon::today(),
             ['account_ids' => array_keys($result)],
         );
 

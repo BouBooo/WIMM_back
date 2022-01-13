@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use TomorrowIdeas\Plaid\Entities\User;
 use TomorrowIdeas\Plaid\PlaidRequestException;
 
-class TokenAccessController extends AbstractPlaidController
+final class TokenAccessController extends AbstractPlaidController
 {
     public function createLinkToken(Request $request): JsonResponse
     {

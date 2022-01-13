@@ -3,11 +3,16 @@
 namespace App\Formatter;
 
 use App\Enums\Period;
+use App\Services\TransactionService;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 
 final class TransactionFormatter implements FormatterInterface
 {
+    public function __construct(
+        private TransactionService $transactionService,
+    ) {
+    }
+
     public function format(array $data, string $mode, int $count): array
     {
         return match ($mode) {
@@ -20,35 +25,15 @@ final class TransactionFormatter implements FormatterInterface
 
     private function formatDay(array $transactions, int $count): array
     {
-        $daysData = [];
-        $today = new \DateTime();
-        $period = CarbonPeriod::create((new \DateTime())->modify("-$count days")->format("Y-m-d"), $today->format("Y-m-d"))->toArray();
-
-        foreach (array_reverse($period) as $date) {
-            $formattedDate = $date->format("Y-m-d");
-            $daysData[$formattedDate] = [
-                'date' => $formattedDate,
-                'label' => ucfirst(Carbon::parse($date)->translatedFormat('l')),
-                'spent' => 0,
-                'income' => 0,
-            ];
-        }
+        $daysData = $this->transactionService->initPeriodDays($count);
 
         foreach ($transactions as $transaction) {
             $date = $transaction->date ?? $transaction->authorized_date;
-            $label = ucfirst(Carbon::parse($date)->translatedFormat('l'));
             $amount = $transaction->amount;
 
             if (isset($daysData[$date]) && $daysData[$date]['date'] === $date) {
                 $daysData[$date]['spent'] += max($amount, 0);
                 $daysData[$date]['income'] += min($amount, 0);
-            } else {
-                $daysData[$date] = [
-                    'date' => $date,
-                    'label' => $label,
-                    'spent' => max($amount, 0),
-                    'income' => min($amount, 0),
-                ];
             }
         }
 

@@ -45,6 +45,10 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    protected $with = [
+        'reminders'
+    ];
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -63,5 +67,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function reminders()
+    {
+        return $this->hasMany(Reminder::class);
     }
 }

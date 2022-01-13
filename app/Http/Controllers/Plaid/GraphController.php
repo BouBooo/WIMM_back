@@ -47,4 +47,27 @@ final class GraphController extends AbstractPlaidController
 
         return $this->respond('Get activity graph', $transactions);
     }
+
+    public function graphBalance(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->getClient()->accounts->list(
+                auth()->user()->plaidAccessToken
+            );
+        } catch (PlaidRequestException $e) {
+            return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
+        }
+
+        $result = [];
+
+        foreach ($response->accounts as $account) {
+            $result[] = [
+                'name' => $account->name,
+                'balance' => $account->balances->current,
+                'preview' => [12350, 12500, 12457, 12627, 12527, 12700, 12827]
+            ];
+        }
+
+        return $this->respond('Get balance graph', $result);
+    }
 }

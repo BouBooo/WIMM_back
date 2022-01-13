@@ -47,6 +47,7 @@ Route::group([
     Route::get('/accounts/identity', [AccountController::class, 'identity']);
     Route::get('/transactions', [TransactionController::class, 'list']);
     Route::get('/activity/graph', [GraphController::class, 'graphActivity']);
+    Route::get('/activity/balance', [GraphController::class, 'graphBalance']);
 });
 
 Route::any('{any}', static function () {

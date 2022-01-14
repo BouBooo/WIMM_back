@@ -8,7 +8,7 @@ class ReminderSentListener
     {
         $reminder = $event->data['reminder'];
         $reminder->update([
-            'is_sent' => true
+            'is_sent' => true,
         ]);
     }
 }

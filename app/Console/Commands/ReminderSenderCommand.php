@@ -62,8 +62,6 @@ class ReminderSenderCommand extends Command
                     $e->getMessage(),
                     $e->getTraceAsString()
                 ));
-
-                return CommandAlias::FAILURE;
             }
         }
 

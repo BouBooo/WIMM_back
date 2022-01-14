@@ -50,10 +50,12 @@ class ReminderSenderCommand extends Command
             return CommandAlias::SUCCESS;
         }
 
+        $sentCount = 0;
         foreach ($reminders->get() as $reminder) {
             try {
                 Mail::to($reminder->user->email)->send(new ReminderMail($reminder));
                 $this->info(sprintf('Mail sent to %s', $reminder->user->email));
+                $sentCount++;
             } catch (\Exception $e) {
                 Log::error(sprintf('[COMMAND] Reminder send failed for user %s | Error : %s | Trace : %s',
                     $reminder->user->email,
@@ -67,7 +69,7 @@ class ReminderSenderCommand extends Command
 
         $this->info(sprintf(
             'Finished sending reminders task, (%s) sent',
-            $reminders->count(),
+            $sentCount,
         ));
 
         return CommandAlias::SUCCESS;

@@ -26,6 +26,8 @@ class ReminderMail extends Mailable
     public function build(): static
     {
         return $this->from(config('mail.mailers.smtp.from'))
-            ->view('emails.reminder')->with(['reminder', $this->reminder]);
+            ->subject('WIMM: You have a reminder !')
+            ->view('emails.reminder')
+            ->with(['reminder', $this->reminder]);
     }
 }

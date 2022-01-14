@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 final class ReminderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     */
     public function index(): JsonResponse
     {
         return $this->respond('All user reminders', [
@@ -21,18 +17,12 @@ final class ReminderController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|between:2,100',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d',
         ]);
 
         if ($validator->fails()) {
@@ -49,12 +39,6 @@ final class ReminderController extends Controller
         return $this->respond('Reminder successfully created', compact('reminder'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
     public function show(int $id): JsonResponse
     {
         $reminder = Reminder::find($id);
@@ -66,25 +50,31 @@ final class ReminderController extends Controller
         return $this->respond('Reminder ', compact('reminder'));
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id$id
-     * @return JsonResponse
-     */
     public function update(Request $request, int $id): JsonResponse
     {
-        // TODO
+        $reminder = Reminder::find($id);
+
+        if (!$reminder) {
+            return $this->respondWithError('Reminder not found');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'string|between:2,100',
+            'start_date' => 'date_format:Y-m-d',
+            'end_date' => 'date_format:Y-m-d',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithError($validator->errors()->first());
+        }
+
+        $reminder->update($request->all());
+
+        return $this->respond('Reminder successfully updated', [
+            'reminder' => $reminder->fresh()
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
     public function destroy(int $id): JsonResponse
     {
         $reminder = Reminder::find($id);

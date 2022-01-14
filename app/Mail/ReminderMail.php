@@ -11,11 +11,8 @@ class ReminderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
+    public $reminder;
+
     public function __construct(Reminder $reminder)
     {
         $this->reminder = $reminder;
@@ -29,6 +26,6 @@ class ReminderMail extends Mailable
     public function build(): static
     {
         return $this->from(config('mail.mailers.smtp.from'))
-            ->view('emails.reminder');
+            ->view('emails.reminder')->with(['reminder', $this->reminder]);
     }
 }

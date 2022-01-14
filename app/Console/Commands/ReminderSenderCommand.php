@@ -45,10 +45,14 @@ class ReminderSenderCommand extends Command
             ->whereDate('end_date', '<=', Carbon::now())
             ->where('is_sent', false);
 
+        if ($reminders->count() === 0) {
+            $this->warn('No reminder(s) to send.');
+            return CommandAlias::SUCCESS;
+        }
+
         foreach ($reminders->get() as $reminder) {
             try {
                 Mail::to($reminder->user->email)->send(new ReminderMail($reminder));
-                // TODO: Faire l'update en se greffant sur l'event post envoi de message avec succès
                 $reminder->update([
                     'is_sent' => true
                 ]);
@@ -62,10 +66,6 @@ class ReminderSenderCommand extends Command
 
                 return CommandAlias::FAILURE;
             }
-        }
-
-        if ($reminders->count() === 0) {
-            $this->warn('No reminder(s) to send.');
         }
 
         $this->info('Finished sending reminders task.');

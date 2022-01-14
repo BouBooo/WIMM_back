@@ -53,7 +53,7 @@ class ReminderSenderCommand extends Command
         $sentCount = 0;
         foreach ($reminders->get() as $reminder) {
             try {
-                Mail::to($reminder->user->email)->send(new ReminderMail($reminder));
+                Mail::to($reminder->user->email)->queue(new ReminderMail($reminder));
                 $this->info(sprintf('Mail sent to %s', $reminder->user->email));
                 $sentCount++;
             } catch (\Exception $e) {

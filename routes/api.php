@@ -48,6 +48,7 @@ Route::group([
     Route::get('/accounts', [AccountController::class, 'list']);
     Route::get('/accounts/identity', [AccountController::class, 'identity']);
     Route::get('/transactions', [TransactionController::class, 'list']);
+    Route::get('/transactions/last', [TransactionController::class, 'last']);
     Route::get('/activity/graph', [GraphController::class, 'graphActivity']);
     Route::get('/balance/graph', [GraphController::class, 'graphBalance']);
 });

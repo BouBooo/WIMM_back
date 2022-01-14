@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ReminderController extends Controller
+final class ReminderController extends Controller
 {
     /**
      * Display a listing of the resource.

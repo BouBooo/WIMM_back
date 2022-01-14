@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class ReminderSenderCommand extends Command
 {
@@ -59,7 +60,7 @@ class ReminderSenderCommand extends Command
                     $e->getTraceAsString()
                 ));
 
-
+                return CommandAlias::FAILURE;
             }
         }
 
@@ -68,6 +69,7 @@ class ReminderSenderCommand extends Command
         }
 
         $this->info('Finished sending reminders task.');
-        return 0;
+
+        return CommandAlias::SUCCESS;
     }
 }

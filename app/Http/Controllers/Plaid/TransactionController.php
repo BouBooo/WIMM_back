@@ -41,14 +41,18 @@ final class TransactionController extends AbstractPlaidController
             return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
         }
 
-        $transactions = $this->paginate(
+        $transactionsPaginator = $this->paginate(
             $response->transactions,
             10,
             $request->query->getInt('page', 1),
-        )->items();
+        );
 
         return $this->respond('Plaid transactions', [
-            'transactions' => $transactions,
+            'pagination' => [
+                'current' => $transactionsPaginator->currentPage(),
+                'total' => $transactionsPaginator->lastPage(),
+            ],
+            'transactions' => array_values($transactionsPaginator->items()),
         ]);
     }
 

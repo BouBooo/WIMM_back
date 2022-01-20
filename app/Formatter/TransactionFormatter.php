@@ -6,6 +6,7 @@ use App\Enums\Period;
 use App\Services\TransactionService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use DateTime;
 
 final class TransactionFormatter implements FormatterInterface
 {
@@ -43,32 +44,19 @@ final class TransactionFormatter implements FormatterInterface
 
     private function formatWeek(array $transactions, int $count): array
     {
-        $count = 7 * $count;
-        $period = CarbonPeriod::create(
-            Carbon::today()->modify("-$count days")->format("Y-m-d"),
-            Carbon::today()->format("Y-m-d")
-        )->toArray();
+        $weeksSplit = [];
 
-        $weekNumber = 0;
-        $weeks = [];
-        foreach ($period as $date) {
-            $weeks[$weekNumber][] = $date->format('Y-m-d');
-            if ((int) $date->format('w') === 0) {
-                $weekNumber++;
-            }
-        }
-
-        $formattedWeekData = [];
         foreach ($transactions as $transaction) {
-            $amount = $transaction->amount;
-
-            $formattedWeekData[$transaction->date] = [
-                'spent' => max($amount, 0),
-                'income' => min($amount, 0),
+            $date = Carbon::parse($transaction->date);
+            $identifier = $date->format('W');
+            $weeksSplit[$identifier] = [
+                'label' => 'Semaine du ' . $this->getFirstDayOfTheWeek($date->year, $date->week),
+                'spent' => $this->getSpentFromTransactions($transactions, $identifier),
+                'income' => $this->getIncomeFromTransactions($transactions, $identifier)
             ];
         }
 
-        return $this->harmonize($formattedWeekData);
+        return $weeksSplit;
     }
 
     private function formatMonth(array $transactions, int $count): array
@@ -110,5 +98,42 @@ final class TransactionFormatter implements FormatterInterface
         }
 
         return $formattedData;
+    }
+
+    private function getSpentFromTransactions($transactions, $identifier): float|int
+    {
+        $spent = [];
+
+        foreach ($transactions as $transaction) {
+            if (
+                $identifier === Carbon::parse($transaction->date)->format('W')
+                && $transaction->amount < 0
+            ) {
+                array_push($spent, abs($transaction->amount));
+            }
+        }
+
+        return array_sum($spent);
+    }
+
+    private function getIncomeFromTransactions($transactions, $identifier): float|int
+    {
+        $income = [];
+
+        foreach ($transactions as $transaction) {
+            if (
+                $identifier === Carbon::parse($transaction->date)->format('W')
+                && $transaction->amount > 0
+            ) {
+                array_push($income, $transaction->amount);
+            }
+        }
+
+        return array_sum($income);
+    }
+
+    private function getFirstDayOfTheWeek($year, $week): string
+    {
+        return Carbon::now()->setISODate($year, $week)->format('d/m');
     }
 }

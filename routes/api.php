@@ -4,6 +4,7 @@ use App\Http\Controllers\Plaid\AccountController;
 use App\Http\Controllers\Plaid\GraphController;
 use App\Http\Controllers\Plaid\TokenAccessController;
 use App\Http\Controllers\Plaid\TransactionController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -34,7 +35,8 @@ Route::group([
     'middleware' => 'jwt.verify',
 ], static function ($router) {
     Route::get('/user-profile', [UserController::class, 'userProfile']);
-    Route::post('/user-profile', [UserController::class, 'update']);
+    Route::patch('/user-profile', [UserController::class, 'update']);
+    Route::resource('reminders', ReminderController::class)->except(['create', 'edit']);
 });
 
 Route::group([
@@ -46,6 +48,7 @@ Route::group([
     Route::get('/accounts', [AccountController::class, 'list']);
     Route::get('/accounts/identity', [AccountController::class, 'identity']);
     Route::get('/transactions', [TransactionController::class, 'list']);
+    Route::get('/transactions/last', [TransactionController::class, 'last']);
     Route::get('/activity/graph', [GraphController::class, 'graphActivity']);
     Route::get('/balance/graph', [GraphController::class, 'graphBalance']);
 });

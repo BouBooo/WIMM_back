@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Plaid;
 
+use App\Enums\Period;
 use App\Formatter\TransactionFormatter;
 use App\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -33,6 +35,10 @@ final class GraphController extends AbstractPlaidController
 
         $period = $data['period'];
         $count = $data['count'];
+        if (Period::DAY === $period) {
+            $count--;
+        }
+
         $dates = $this->transactionService->getDatesByPeriod($period, $count);
 
         try {
@@ -59,25 +65,28 @@ final class GraphController extends AbstractPlaidController
         }
 
         $result = [];
-        foreach ($response->accounts as $account) {
-            try {
-                $transactionsResponse = $this->getClient()->transactions->list(
-                    auth()->user()->plaidAccessToken,
-                    (new \DateTime())->modify("-6 months"),
-                    new \DateTime(),
-                    ['account_ids' => [$account->account_id]],
-                );
-            } catch (PlaidRequestException $e) {
-                return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
-            }
 
-            $result[] = [
+        foreach ($response->accounts as $account) {
+            $result[$account->account_id] = [
                 'name' => $account->name,
                 'balance' => $account->balances->current,
-                'preview' => $this->transactionService->splitByMonth($transactionsResponse->transactions)
+                'preview' => [],
             ];
         }
 
-        return $this->respond('Get balance graph', $result);
+        $transactionsResponse = $this->getClient()->transactions->list(
+            auth()->user()->plaidAccessToken,
+            Carbon::today()->modify("-6 months"),
+            Carbon::today(),
+            ['account_ids' => array_keys($result)],
+        );
+
+        $transactions = $this->transactionService->splitByAccounts($transactionsResponse->transactions);
+
+        foreach ($transactions as $account => $groupedTransactions) {
+            $result[$account]['preview'] = $this->transactionService->splitByMonth($groupedTransactions);
+        }
+
+        return $this->respond('Get balance graph', array_values($result));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Formatter;
 use App\Enums\Period;
 use App\Services\TransactionService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 final class TransactionFormatter implements FormatterInterface
 {
@@ -42,17 +43,28 @@ final class TransactionFormatter implements FormatterInterface
 
     private function formatWeek(array $transactions, int $count): array
     {
+        $count = 7 * $count;
+        $period = CarbonPeriod::create(
+            Carbon::today()->modify("-$count days")->format("Y-m-d"),
+            Carbon::today()->format("Y-m-d")
+        )->toArray();
+
+        $weekNumber = 0;
+        $weeks = [];
+        foreach ($period as $date) {
+            $weeks[$weekNumber][] = $date->format('Y-m-d');
+            if ((int) $date->format('w') === 0) {
+                $weekNumber++;
+            }
+        }
+
         $formattedWeekData = [];
-        $weeks = array_chunk($transactions, $count); // Split by week.
+        foreach ($transactions as $transaction) {
+            $amount = $transaction->amount;
 
-        foreach ($weeks as $week) {
-            $firstWeekDay = $week[0];
-            $weekAmounts = array_map(static fn ($day) => $day->amount ?? 0, $week);
-
-            $formattedWeekData[] = [
-                'label' => 'Semaine du ' . Carbon::parse($firstWeekDay->date ?? $firstWeekDay->authorized_date)->translatedFormat('d/m'),
-                'spent' => array_sum(array_filter($weekAmounts, static fn ($amount) => $amount >= 0)),
-                'income' => -1 * abs(array_sum(array_filter($weekAmounts, static fn ($amount) => $amount < 0))),
+            $formattedWeekData[$transaction->date] = [
+                'spent' => max($amount, 0),
+                'income' => min($amount, 0),
             ];
         }
 

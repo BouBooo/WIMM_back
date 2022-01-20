@@ -20,8 +20,8 @@ class TransactionService
         };
 
         return [
-            'startDate' => (new \DateTime())->modify("-$nbrDays days"),
-            'endDate' => new \DateTime(),
+            'startDate' => Carbon::today()->modify("-$nbrDays days"),
+            'endDate' => Carbon::today(),
         ];
     }
 
@@ -29,16 +29,19 @@ class TransactionService
     {
         $days = [];
         $period = CarbonPeriod::create(
-            (new \DateTime())->modify("-$count days")->format("Y-m-d"),
-            (new \DateTime())->format("Y-m-d")
+            Carbon::today()->modify("-$count days")->format("Y-m-d"),
+            Carbon::today()->format("Y-m-d")
         )->toArray();
+
+        $moreThanOneWeek = count($period) > 7;
 
         foreach (array_reverse($period) as $date) {
             $formattedDate = $date->format("Y-m-d");
+            $parsedDate = Carbon::parse($date);
 
             $days[$formattedDate] = [
                 'date' => $formattedDate,
-                'label' => ucfirst(Carbon::parse($date)->translatedFormat('l')),
+                'label' => $moreThanOneWeek ? $parsedDate->translatedFormat('d/m') : ucfirst($parsedDate->translatedFormat('l')),
                 'spent' => 0,
                 'income' => 0,
             ];
@@ -53,9 +56,7 @@ class TransactionService
         $monthsSplited = [];
 
         foreach ($data as $transaction) {
-            $date = new \DateTime($transaction->date);
-            $month = $date->format('F');
-            $monthsSplited[$month][] = $transaction->amount;
+            $monthsSplited[Carbon::parse($transaction->date)->format('F')][] = $transaction->amount;
         }
 
         foreach ($monthsSplited as $month => $amounts) {
@@ -63,5 +64,16 @@ class TransactionService
         }
 
         return array_values($result);
+    }
+
+    public function splitByAccounts(array $data): array
+    {
+        $result = [];
+
+        foreach ($data as $transaction) {
+            $result[$transaction->account_id][] = $transaction;
+        }
+
+        return $result;
     }
 }

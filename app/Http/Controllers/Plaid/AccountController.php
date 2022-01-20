@@ -34,8 +34,18 @@ final class AccountController extends AbstractPlaidController
             return $this->respondWithError($e->getMessage(), [], $e->getCode());
         }
 
+        $accountsPaginator = $this->paginate(
+            $response->accounts,
+            10,
+            $request->query->getInt('page') + 1,
+        );
+
         return $this->respond('Plaid Auth accounts', [
-            'accounts' => $response->accounts,
+            'pagination' => [
+                'current' => $accountsPaginator->currentPage() - 1,
+                'total' => $accountsPaginator->total(),
+            ],
+            'accounts' => array_values($accountsPaginator->items()),
         ]);
     }
 

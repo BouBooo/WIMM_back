@@ -16,7 +16,7 @@ class UserControllerTest extends TestCase
 
     public function testSuccessfulUpdateUserProfile(): void
     {
-        $this->makeAuthenticatedRequest(Request::METHOD_POST, self::USER_PROFILE_ROUTE, [
+        $this->makeAuthenticatedRequest(Request::METHOD_PATCH, self::USER_PROFILE_ROUTE, [
             'firstName' => 'newFirstName',
         ])->assertStatus(Response::HTTP_OK);
     }

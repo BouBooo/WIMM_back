@@ -33,5 +33,8 @@ return [
     'plaid' => [
         'client_id' => env('PLAID_CLIENT_ID'),
         'secret' => env('PLAID_SECRET'),
+        'transactions' => [
+            'fetch_count' => 500
+        ]
     ],
 ];

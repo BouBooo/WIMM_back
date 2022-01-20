@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Controllers\Plaid;
+namespace Tests\Feature\Http\Controllers\Plaid;
 
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;

@@ -5,7 +5,6 @@ namespace App\Formatter;
 use App\Enums\Period;
 use App\Services\TransactionService;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 
 final class TransactionFormatter implements FormatterInterface
 {
@@ -18,10 +17,33 @@ final class TransactionFormatter implements FormatterInterface
     {
         return match ($mode) {
             Period::DAY => $this->formatDay($data, $count),
-            Period::WEEK => $this->formatWeek($data, $count),
-            Period::MONTH => $this->formatMonth($data, $count),
-            Period::YEAR => $this->formatYear($data, $count),
+            Period::WEEK => $this->formatTransactions($data, $count, 'W'),
+            Period::MONTH => $this->formatTransactions($data, $count, 'F'),
+            Period::YEAR => $this->formatTransactions($data, $count, 'Y'),
         };
+    }
+
+    private function formatTransactions(array $transactions, int $count, string $format): array
+    {
+        $splited = [];
+
+        foreach ($transactions as $transaction) {
+            $date = Carbon::parse($transaction->date);
+            $identifier = $date->format($format);
+            $splited[$identifier] = [
+                'label' => ($format === 'W')
+                    ? 'Semaine du ' . $this->transactionService->getFirstDayOfTheWeek($date->year, $date->week)
+                    : $identifier,
+                'spent' => $this->transactionService->getSpentFromTransactions($transactions, $identifier, $format),
+                'income' => $this->transactionService->getIncomeFromTransactions($transactions, $identifier, $format)
+            ];
+        }
+
+        if (count($splited) > $count) {
+            array_pop($splited);
+        }
+
+        return $this->harmonize($splited);
     }
 
     private function formatDay(array $transactions, int $count): array
@@ -39,63 +61,6 @@ final class TransactionFormatter implements FormatterInterface
         }
 
         return $this->harmonize($daysData);
-    }
-
-    private function formatWeek(array $transactions, int $count): array
-    {
-        $count = 7 * $count;
-        $period = CarbonPeriod::create(
-            Carbon::today()->modify("-$count days")->format("Y-m-d"),
-            Carbon::today()->format("Y-m-d")
-        )->toArray();
-
-        $weekNumber = 0;
-        $weeks = [];
-        foreach ($period as $date) {
-            $weeks[$weekNumber][] = $date->format('Y-m-d');
-            if ((int) $date->format('w') === 0) {
-                $weekNumber++;
-            }
-        }
-
-        $formattedWeekData = [];
-        foreach ($transactions as $transaction) {
-            $amount = $transaction->amount;
-
-            $formattedWeekData[$transaction->date] = [
-                'spent' => max($amount, 0),
-                'income' => min($amount, 0),
-            ];
-        }
-
-        return $this->harmonize($formattedWeekData);
-    }
-
-    private function formatMonth(array $transactions, int $count): array
-    {
-        $formattedMonthData = [];
-
-        $months = array_chunk($transactions, count($transactions) - $count); // Split by month.
-
-        foreach ($months as $month) {
-            $firstWeekDay = array_reverse($month)[0];
-            $monthAmounts = array_map(static fn ($day) => $day->amount ?? 0, $month);
-
-            $formattedMonthData[] = [
-                'label' => ucfirst(Carbon::parse($firstWeekDay->date ?? $firstWeekDay->authorized_date)->translatedFormat('F')),
-                'spent' => array_sum(array_filter($monthAmounts, static fn ($amount) => $amount >= 0)),
-                'income' => -1 * abs(array_sum(array_filter($monthAmounts, static fn ($amount) => $amount < 0))),
-            ];
-        }
-
-        return $this->harmonize($formattedMonthData);
-    }
-
-    private function formatYear(array $transactions, int $count): array
-    {
-        $formattedYearData = [];
-
-        return $this->harmonize($formattedYearData);
     }
 
     private function harmonize(array $data): array

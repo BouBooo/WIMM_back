@@ -11,24 +11,38 @@ use JWTAuth;
 
 abstract class TestCase extends BaseTestCase
 {
+    use CreatesApplication, RefreshDatabase, ApiResponse;
+
     private const BASE_API_URL = "/api";
+    private const TEST_PLAID_ACCESS_TOKEN = "access-sandbox-bf154942-35f3-4c60-bab4-2b2f75f6a71b";
 
     protected const REGISTER_ROUTE = "/auth/register";
     protected const LOGIN_ROUTE = "/auth/login";
     protected const USER_PROFILE_ROUTE = '/user-profile';
+    protected const REMINDER_ROUTE = '/reminders';
     protected const CREATE_LINK_TOKEN_ROUTE = '/plaid/link-token/create';
     protected const EXCHANGE_LINK_TOKEN_ROUTE = '/plaid/public-token/exchange';
-
-    use CreatesApplication, RefreshDatabase, ApiResponse;
+    protected const ACCOUNTS_ROUTE = '/plaid/accounts';
+    protected const TRANSACTIONS_ROUTE = '/plaid/transactions';
+    protected const BALANCE_GRAPH_ROUTE = '/plaid/balance/graph';
+    protected const ACTIVITY_GRAPH_ROUTE = '/plaid/activity/graph';
 
     protected function jsonRequest(string $method, string $uri, array $data = [], array $headers = []): TestResponse
     {
         return $this->json($method, self::BASE_API_URL . $uri, $data, $headers);
     }
 
-    protected function makeAuthenticatedRequest(string $method, string $uri, array $data = []): TestResponse
+    protected function makeAuthenticatedRequest(string $method, string $uri, array $data = [], bool $forPlaid = false): TestResponse
     {
-        $user = User::factory()->create();
+        $attributes = [];
+        if ($forPlaid) {
+            $attributes = [
+                'plaidAccessToken' => self::TEST_PLAID_ACCESS_TOKEN,
+                'hasBankSelected' => true,
+            ];
+        }
+
+        $user = User::factory()->create($attributes);
         $token = JWTAuth::fromUser($user);
 
         return $this->jsonRequest($method, $uri, $data, [

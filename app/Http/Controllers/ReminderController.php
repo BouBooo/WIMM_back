@@ -21,8 +21,8 @@ final class ReminderController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|between:2,100',
-            'start_date' => 'required|date_format:Y-m-d',
-            'end_date' => 'required|date_format:Y-m-d',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -60,8 +60,8 @@ final class ReminderController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'string|between:2,100',
-            'start_date' => 'date_format:Y-m-d',
-            'end_date' => 'date_format:Y-m-d',
+            'start_date' => 'date',
+            'end_date' => 'date',
         ]);
 
         if ($validator->fails()) {

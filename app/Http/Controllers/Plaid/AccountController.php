@@ -55,7 +55,7 @@ final class AccountController extends AbstractPlaidController
             'account_ids' => 'present|array'
         ]);
 
-        $accountIds = $validator->validated()['account_ids'];
+        $accountIds = json_decode($validator->validated()['account_ids']);
 
         $options = [];
         if (!empty($accountIds)) {

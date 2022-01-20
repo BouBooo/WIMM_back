@@ -44,7 +44,7 @@ final class TransactionController extends AbstractPlaidController
         $transactionsPaginator = $this->paginate(
             $response->transactions,
             10,
-            $request->query->getInt('page', 0) + 1,
+            $request->query->getInt('page') + 1,
         );
 
         return $this->respond('Plaid transactions', [

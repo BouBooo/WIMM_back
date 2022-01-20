@@ -44,6 +44,7 @@ final class GraphController extends AbstractPlaidController
         try {
             $response = $this->getClient()->transactions->list(
                 auth()->user()->plaidAccessToken, $dates['startDate'], $dates['endDate'],
+                [ 'count' => config('services.plaid.transactions.fetch_count') ]
             );
         } catch (PlaidRequestException $e) {
             return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());

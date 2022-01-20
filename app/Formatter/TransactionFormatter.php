@@ -86,9 +86,23 @@ final class TransactionFormatter implements FormatterInterface
 
     private function formatYear(array $transactions, int $count): array
     {
-        $formattedYearData = [];
+        $yearsSplit = [];
 
-        return $this->harmonize($formattedYearData);
+        foreach ($transactions as $transaction) {
+            $date = Carbon::parse($transaction->date);
+            $identifier = $date->format('Y');
+            $yearsSplit[$identifier] = [
+                'label' => $identifier,
+                'spent' => $this->transactionService->getSpentFromTransactions($transactions, $identifier, 'Y'),
+                'income' => $this->transactionService->getIncomeFromTransactions($transactions, $identifier, 'Y')
+            ];
+        }
+
+        if (count($yearsSplit) > $count) {
+            array_pop($yearsSplit);
+        }
+
+        return $this->harmonize($yearsSplit);
     }
 
     private function harmonize(array $data): array

@@ -60,7 +60,7 @@ final class TransactionFormatter implements FormatterInterface
             array_pop($weeksSplit);
         }
 
-        return $weeksSplit;
+        return $this->harmonize($weeksSplit);
     }
 
     private function formatMonth(array $transactions, int $count): array
@@ -109,11 +109,8 @@ final class TransactionFormatter implements FormatterInterface
         $spent = [];
 
         foreach ($transactions as $transaction) {
-            if (
-                $identifier === Carbon::parse($transaction->date)->format('W')
-                && $transaction->amount < 0
-            ) {
-                array_push($spent, abs($transaction->amount));
+            if ($transaction->amount < 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
+                $spent[] = abs($transaction->amount);
             }
         }
 
@@ -125,18 +122,15 @@ final class TransactionFormatter implements FormatterInterface
         $income = [];
 
         foreach ($transactions as $transaction) {
-            if (
-                $identifier === Carbon::parse($transaction->date)->format('W')
-                && $transaction->amount > 0
-            ) {
-                array_push($income, $transaction->amount);
+            if ($transaction->amount > 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
+                $income[] = $transaction->amount;
             }
         }
 
         return array_sum($income);
     }
 
-    private function getFirstDayOfTheWeek($year, $week): string
+    private function getFirstDayOfTheWeek(int $year, int $week): string
     {
         return Carbon::now()->setISODate($year, $week)->format('d/m');
     }

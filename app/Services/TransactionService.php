@@ -76,4 +76,35 @@ class TransactionService
 
         return $result;
     }
+
+    public function getSpentFromTransactions($transactions, $identifier): float|int
+    {
+        $spent = [];
+
+        foreach ($transactions as $transaction) {
+            if ($transaction->amount > 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
+                $spent[] = abs($transaction->amount);
+            }
+        }
+
+        return array_sum($spent);
+    }
+
+    public function getIncomeFromTransactions($transactions, $identifier): float|int
+    {
+        $income = [];
+
+        foreach ($transactions as $transaction) {
+            if ($transaction->amount < 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
+                $income[] = $transaction->amount;
+            }
+        }
+
+        return array_sum($income);
+    }
+
+    public function getFirstDayOfTheWeek(int $year, int $week): string
+    {
+        return Carbon::now()->setISODate($year, $week)->format('d/m');
+    }
 }

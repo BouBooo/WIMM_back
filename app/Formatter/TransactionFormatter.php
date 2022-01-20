@@ -50,9 +50,9 @@ final class TransactionFormatter implements FormatterInterface
             $date = Carbon::parse($transaction->date);
             $identifier = $date->format('W');
             $weeksSplit[$identifier] = [
-                'label' => 'Semaine du ' . $this->getFirstDayOfTheWeek($date->year, $date->week),
-                'spent' => $this->getSpentFromTransactions($transactions, $identifier),
-                'income' => $this->getIncomeFromTransactions($transactions, $identifier)
+                'label' => 'Semaine du ' . $this->transactionService->getFirstDayOfTheWeek($date->year, $date->week),
+                'spent' => $this->transactionService->getSpentFromTransactions($transactions, $identifier),
+                'income' => $this->transactionService->getIncomeFromTransactions($transactions, $identifier)
             ];
         }
 
@@ -104,34 +104,4 @@ final class TransactionFormatter implements FormatterInterface
         return $formattedData;
     }
 
-    private function getSpentFromTransactions($transactions, $identifier): float|int
-    {
-        $spent = [];
-
-        foreach ($transactions as $transaction) {
-            if ($transaction->amount < 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
-                $spent[] = abs($transaction->amount);
-            }
-        }
-
-        return array_sum($spent);
-    }
-
-    private function getIncomeFromTransactions($transactions, $identifier): float|int
-    {
-        $income = [];
-
-        foreach ($transactions as $transaction) {
-            if ($transaction->amount > 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
-                $income[] = $transaction->amount;
-            }
-        }
-
-        return array_sum($income);
-    }
-
-    private function getFirstDayOfTheWeek(int $year, int $week): string
-    {
-        return Carbon::now()->setISODate($year, $week)->format('d/m');
-    }
 }

@@ -12,14 +12,14 @@ final class AccountController extends AbstractPlaidController
     public function list(Request $request): JsonResponse
     {
         $validator = Validator::make($request->only('account_ids'), [
-            'account_ids' => 'present|array'
+            'account_ids' => 'present',
         ]);
 
         if ($validator->fails()) {
             return $this->respondWithError($validator->getMessageBag()->first());
         }
 
-        $accountIds = $validator->validated()['account_ids'];
+        $accountIds = json_decode($validator->validated()['account_ids']);
 
         $options = [];
         if (!empty($accountIds)) {

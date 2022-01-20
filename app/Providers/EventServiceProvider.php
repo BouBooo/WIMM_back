@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Listeners\ReminderSentListener;
+use App\Models\Reminder;
 use App\Models\User;
+use App\Observers\ReminderObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -34,5 +36,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         User::observe(UserObserver::class);
+        Reminder::observe(ReminderObserver::class);
     }
 }

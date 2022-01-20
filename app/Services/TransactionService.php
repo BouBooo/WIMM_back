@@ -77,12 +77,12 @@ class TransactionService
         return $result;
     }
 
-    public function getSpentFromTransactions($transactions, $identifier): float|int
+    public function getSpentFromTransactions($transactions, $identifier, $format): float|int
     {
         $spent = [];
 
         foreach ($transactions as $transaction) {
-            if ($transaction->amount > 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
+            if ($transaction->amount > 0 && $identifier === Carbon::parse($transaction->date)->format($format)) {
                 $spent[] = abs($transaction->amount);
             }
         }
@@ -90,12 +90,12 @@ class TransactionService
         return array_sum($spent);
     }
 
-    public function getIncomeFromTransactions($transactions, $identifier): float|int
+    public function getIncomeFromTransactions($transactions, $identifier, $format): float|int
     {
         $income = [];
 
         foreach ($transactions as $transaction) {
-            if ($transaction->amount < 0 && $identifier === Carbon::parse($transaction->date)->format('W')) {
+            if ($transaction->amount < 0 && $identifier === Carbon::parse($transaction->date)->format($format)) {
                 $income[] = $transaction->amount;
             }
         }

@@ -51,8 +51,8 @@ final class TransactionFormatter implements FormatterInterface
             $identifier = $date->format('W');
             $weeksSplit[$identifier] = [
                 'label' => 'Semaine du ' . $this->transactionService->getFirstDayOfTheWeek($date->year, $date->week),
-                'spent' => $this->transactionService->getSpentFromTransactions($transactions, $identifier),
-                'income' => $this->transactionService->getIncomeFromTransactions($transactions, $identifier)
+                'spent' => $this->transactionService->getSpentFromTransactions($transactions, $identifier, 'W'),
+                'income' => $this->transactionService->getIncomeFromTransactions($transactions, $identifier, 'W')
             ];
         }
 
@@ -65,22 +65,23 @@ final class TransactionFormatter implements FormatterInterface
 
     private function formatMonth(array $transactions, int $count): array
     {
-        $formattedMonthData = [];
+        $monthsSplit = [];
 
-        $months = array_chunk($transactions, count($transactions) - $count); // Split by month.
-
-        foreach ($months as $month) {
-            $firstWeekDay = array_reverse($month)[0];
-            $monthAmounts = array_map(static fn ($day) => $day->amount ?? 0, $month);
-
-            $formattedMonthData[] = [
-                'label' => ucfirst(Carbon::parse($firstWeekDay->date ?? $firstWeekDay->authorized_date)->translatedFormat('F')),
-                'spent' => array_sum(array_filter($monthAmounts, static fn ($amount) => $amount >= 0)),
-                'income' => -1 * abs(array_sum(array_filter($monthAmounts, static fn ($amount) => $amount < 0))),
+        foreach ($transactions as $transaction) {
+            $date = Carbon::parse($transaction->date);
+            $identifier = $date->format('F');
+            $monthsSplit[$identifier] = [
+                'label' => $identifier,
+                'spent' => $this->transactionService->getSpentFromTransactions($transactions, $identifier, 'F'),
+                'income' => $this->transactionService->getIncomeFromTransactions($transactions, $identifier, 'F')
             ];
         }
 
-        return $this->harmonize($formattedMonthData);
+        if (count($monthsSplit) > $count) {
+            array_pop($monthsSplit);
+        }
+
+        return $this->harmonize($monthsSplit);
     }
 
     private function formatYear(array $transactions, int $count): array

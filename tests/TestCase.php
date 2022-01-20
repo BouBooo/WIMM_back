@@ -19,8 +19,13 @@ abstract class TestCase extends BaseTestCase
     protected const REGISTER_ROUTE = "/auth/register";
     protected const LOGIN_ROUTE = "/auth/login";
     protected const USER_PROFILE_ROUTE = '/user-profile';
+    protected const REMINDER_ROUTE = '/reminders';
     protected const CREATE_LINK_TOKEN_ROUTE = '/plaid/link-token/create';
     protected const EXCHANGE_LINK_TOKEN_ROUTE = '/plaid/public-token/exchange';
+    protected const ACCOUNTS_ROUTE = '/plaid/accounts';
+    protected const TRANSACTIONS_ROUTE = '/plaid/transactions';
+    protected const BALANCE_GRAPH_ROUTE = '/plaid/balance/graph';
+    protected const ACTIVITY_GRAPH_ROUTE = '/plaid/activity/graph';
 
     protected function jsonRequest(string $method, string $uri, array $data = [], array $headers = []): TestResponse
     {

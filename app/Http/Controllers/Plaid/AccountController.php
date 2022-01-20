@@ -52,7 +52,7 @@ final class AccountController extends AbstractPlaidController
     public function identity(Request $request): JsonResponse
     {
         $validator = Validator::make($request->only('account_ids'), [
-            'account_ids' => 'present|array'
+            'account_ids' => 'present',
         ]);
 
         $accountIds = json_decode($validator->validated()['account_ids']);

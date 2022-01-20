@@ -49,7 +49,7 @@ final class GraphController extends AbstractPlaidController
             return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
         }
 
-        $transactions = array_values($this->formatter->format($response->transactions, $period, $count));
+        $transactions = $this->formatter->format($response->transactions, $period, $count);
 
         return $this->respond('Get activity graph', $transactions);
     }

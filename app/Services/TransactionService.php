@@ -77,7 +77,7 @@ class TransactionService
         return $result;
     }
 
-    public function getSpentFromTransactions($transactions, $identifier, $format): float|int
+    public function getSpentFromTransactions(array $transactions, string $identifier, string $format): float|int
     {
         $spent = [];
 
@@ -90,7 +90,7 @@ class TransactionService
         return array_sum($spent);
     }
 
-    public function getIncomeFromTransactions($transactions, $identifier, $format): float|int
+    public function getIncomeFromTransactions(array $transactions, string $identifier, string $format): float|int
     {
         $income = [];
 

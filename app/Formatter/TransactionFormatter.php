@@ -56,6 +56,10 @@ final class TransactionFormatter implements FormatterInterface
             ];
         }
 
+        if (count($weeksSplit) > $count) {
+            array_pop($weeksSplit);
+        }
+
         return $weeksSplit;
     }
 

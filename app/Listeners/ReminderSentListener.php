@@ -13,6 +13,7 @@ class ReminderSentListener
 
         match ($mailType) {
             ReminderMail::MAIL_CODE => $this->updateReminderTask($event->data['reminder']),
+            default => 'no-action'
         };
     }
 

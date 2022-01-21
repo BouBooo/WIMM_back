@@ -1,5 +1,9 @@
 @extends('emails.base')
 
-@section('mailContent')
-    <p>You have a reminder today for : <b>{{ $reminder->title }}</b></p>
+@section('title')
+    <p>Nouveau rappel</p>
+@endsection
+
+@section('description')
+    <p>Vous avez un rappel pour : <b>{{ $reminder->title }}</b></p>
 @endsection

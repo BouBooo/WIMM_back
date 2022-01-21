@@ -17,7 +17,7 @@ class ReminderSentListener
         };
     }
 
-    private function updateReminderTask(Reminder $reminder)
+    private function updateReminderTask(Reminder $reminder): void
     {
         $reminder->update([
             'is_sent' => true,

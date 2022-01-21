@@ -11,27 +11,16 @@ class WelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    const MAIL_CODE = 'wimm_welcome';
+    public const MAIL_CODE = 'wimm_welcome';
 
     public User $user;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
     public function __construct(User $user)
     {
         $this->user = $user;
     }
 
-
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
+    public function build(): WelcomeMail
     {
         return $this->from(config('mail.mailers.smtp.from'))
             ->subject('WIMM: Welcome !')

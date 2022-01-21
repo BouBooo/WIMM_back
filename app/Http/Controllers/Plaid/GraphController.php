@@ -57,10 +57,10 @@ final class GraphController extends AbstractPlaidController
 
     public function graphBalance(): JsonResponse
     {
+        $plaidAccessToken = auth()->user()->plaidAccessToken;
+
         try {
-            $response = $this->getClient()->accounts->list(
-                auth()->user()->plaidAccessToken
-            );
+            $response = $this->getClient()->accounts->list($plaidAccessToken);
         } catch (PlaidRequestException $e) {
             return $this->respondWithError($e->getResponse()?->error_message, [], $e->getCode());
         }
@@ -76,7 +76,7 @@ final class GraphController extends AbstractPlaidController
         }
 
         $transactionsResponse = $this->getClient()->transactions->list(
-            auth()->user()->plaidAccessToken,
+            $plaidAccessToken,
             Carbon::today()->modify("-6 months"),
             Carbon::today(),
             ['account_ids' => array_keys($result)],

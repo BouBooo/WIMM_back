@@ -35,7 +35,7 @@ final class TokenAccessController extends AbstractPlaidController
         }
 
         return $this->respond('Plaid public token created', [
-            'linkToken' => $response->link_token
+            'linkToken' => $response->link_token,
         ]);
     }
 
@@ -63,7 +63,7 @@ final class TokenAccessController extends AbstractPlaidController
         ]);
 
         return $this->respond('Plaid access token created', [
-            'accessToken' => $accessToken
+            'accessToken' => $accessToken,
         ]);
     }
 }

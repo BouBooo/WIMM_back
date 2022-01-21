@@ -14,7 +14,7 @@ abstract class AbstractPlaidController extends Controller
         $this->client = new Plaid(
             config('services.plaid.client_id'),
             config('services.plaid.secret'),
-            'sandbox'
+            'sandbox',
         );
     }
 

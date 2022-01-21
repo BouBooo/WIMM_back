@@ -8,10 +8,7 @@ use Carbon\Carbon;
 class ReminderObserver
 {
     /**
-     * Handle the Reminder "updated" event.
-     *
-     * @param Reminder $reminder
-     * @return void
+     * Handle the Reminder "updating" event.
      */
     public function updating(Reminder $reminder): void
     {

@@ -10,9 +10,6 @@ class UserObserver
 {
     /**
      * Handle the User "updated" event.
-     *
-     * @param User $user
-     * @return void
      */
     public function updated(User $user): void
     {
@@ -24,9 +21,6 @@ class UserObserver
 
     /**
      * Handle the User "created" event.
-     *
-     * @param User $user
-     * @return void
      */
     public function created(User $user): void
     {

@@ -11,6 +11,8 @@ class WelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    const MAIL_CODE = 'wimm_welcome';
+
     public User $user;
 
     /**
@@ -34,6 +36,9 @@ class WelcomeMail extends Mailable
         return $this->from(config('mail.mailers.smtp.from'))
             ->subject('WIMM: Welcome !')
             ->view('emails.welcome')
-            ->with(['user', $this->user]);
+            ->with([
+                'user' => $this->user,
+                'mailCode' => self::MAIL_CODE
+            ]);
     }
 }

@@ -11,6 +11,8 @@ class ReminderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    const MAIL_CODE = 'wimm_reminders_send';
+
     public Reminder $reminder;
 
     public function __construct(Reminder $reminder)
@@ -28,6 +30,9 @@ class ReminderMail extends Mailable
         return $this->from(config('mail.mailers.smtp.from'))
             ->subject('WIMM: You have a reminder !')
             ->view('emails.reminder')
-            ->with(['reminder', $this->reminder]);
+            ->with([
+                'reminder' => $this->reminder,
+                'mailCode' => self::MAIL_CODE
+            ]);
     }
 }

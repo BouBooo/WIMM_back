@@ -1,12 +1,9 @@
 <?php
 
 namespace App\Console\Commands;
-
-use App\Interfaces\ReminderRepositoryInterface;
+;
 use App\Mail\ReminderMail;
-use App\Models\Reminder;
 use App\Repositories\ReminderRepository;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;

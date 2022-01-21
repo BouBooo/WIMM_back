@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Console\Commands;
-;
+
 use App\Mail\ReminderMail;
 use App\Repositories\ReminderRepository;
 use Illuminate\Console\Command;

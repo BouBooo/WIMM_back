@@ -17,7 +17,7 @@ class JWTMiddleware extends BaseMiddleware
 {
     use ApiResponse;
 
-    public function handle(Request $request, Closure $next): JsonResponse|Closure
+    public function handle(Request $request, Closure $next): JsonResponse|Closure|Response
     {
         try {
             JWTAuth::parseToken()->authenticate();

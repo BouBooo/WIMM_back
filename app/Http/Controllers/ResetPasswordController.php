@@ -41,7 +41,6 @@ final class ResetPasswordController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'token' => 'string|required',
-            'email' => 'required|email',
             'password' => 'string|required|min:6',
         ]);
 
@@ -51,11 +50,7 @@ final class ResetPasswordController extends Controller
 
         $data = $validator->validated();
 
-        $user = User::where([
-            'email' => $data['email'],
-            'reset_password_token' => $data['token'],
-        ])->first();
-
+        $user = User::where('reset_password_token', $data['token'])->first();
         if (null === $user) {
             return $this->respondWithError('Invalid token or email');
         }

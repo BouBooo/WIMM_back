@@ -20,11 +20,6 @@ class ReminderMail extends Mailable
         $this->reminder = $reminder;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build(): static
     {
         return $this->from(config('mail.mailers.smtp.from'))

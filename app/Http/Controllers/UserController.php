@@ -16,7 +16,7 @@ final class UserController extends Controller
     public function userProfile(): JsonResponse
     {
         return $this->respond('User data', [
-            'user' => auth()->user()
+            'user' => auth()->user(),
         ]);
     }
 
@@ -38,7 +38,7 @@ final class UserController extends Controller
         $user->update($request->all());
 
         return $this->respond('User successfully updated', [
-            'user' => $user->fresh()
+            'user' => $user->fresh(),
         ]);
     }
 }

@@ -48,7 +48,7 @@ final class AuthController extends Controller
 
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => bcrypt($request->password)]
+            ['password' => bcrypt($request->password)],
         ));
 
         return $this->respond('User successfully registered', $user, ResponseAlias::HTTP_CREATED);
@@ -56,6 +56,7 @@ final class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
+        auth()->invalidate(); // Invalidate JWT Token
         auth()->logout();
 
         return $this->respond('Successfully logged out');

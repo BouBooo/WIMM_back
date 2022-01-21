@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Mail\WelcomeMail;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class UserObserver
 {
@@ -16,5 +18,16 @@ class UserObserver
     {
         $user->password = bcrypt($user->password);
         $user->saveQuietly();
+    }
+
+    /**
+     * Handle the User "created" event.
+     *
+     * @param User $user
+     * @return void
+     */
+    public function created(User $user): void
+    {
+        Mail::to($user->email)->queue(new WelcomeMail($user));
     }
 }

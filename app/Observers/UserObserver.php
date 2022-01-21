@@ -16,8 +16,10 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        $user->password = bcrypt($user->password);
-        $user->saveQuietly();
+        if ($user->isDirty('password')) {
+            $user->password = bcrypt($user->password);
+            $user->saveQuietly();
+        }
     }
 
     /**

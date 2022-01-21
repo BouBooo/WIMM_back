@@ -11,7 +11,7 @@ class ReminderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    const MAIL_CODE = 'wimm_reminders_send';
+    public const MAIL_CODE = 'wimm_reminders_send';
 
     public Reminder $reminder;
 

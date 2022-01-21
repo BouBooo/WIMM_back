@@ -24,7 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'plaidAccessToken',
-        'hasBankSelected'
+        'hasBankSelected',
     ];
 
     /**
@@ -34,6 +34,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password',
+        'reset_password_token',
         'remember_token',
     ];
 
@@ -47,7 +48,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $with = [
-        'reminders'
+        'reminders',
     ];
 
     /**

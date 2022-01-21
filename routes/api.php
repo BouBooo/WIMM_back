@@ -5,6 +5,7 @@ use App\Http\Controllers\Plaid\GraphController;
 use App\Http\Controllers\Plaid\TokenAccessController;
 use App\Http\Controllers\Plaid\TransactionController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -29,6 +30,13 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+});
+
+Route::group([
+    'middleware' => 'api',
+], static function ($router) {
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
+    Route::patch('/reset-password/check', [ResetPasswordController::class, 'check']);
 });
 
 Route::group([

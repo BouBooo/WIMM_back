@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
         'lastName',
         'email',
         'password',
+        'reset_password_token',
         'plaidAccessToken',
         'hasBankSelected',
     ];

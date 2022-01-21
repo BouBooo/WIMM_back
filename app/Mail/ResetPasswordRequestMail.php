@@ -2,31 +2,30 @@
 
 namespace App\Mail;
 
-use App\Models\Reminder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ReminderMail extends Mailable
+class ResetPasswordRequestMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public const MAIL_CODE = 'wimm_reminders_send';
+    public const MAIL_CODE = 'wimm_reset_password_request_send';
 
-    public Reminder $reminder;
+    public string $token;
 
-    public function __construct(Reminder $reminder)
+    public function __construct(string $token)
     {
-        $this->reminder = $reminder;
+        $this->token = $token;
     }
 
     public function build(): static
     {
         return $this->from(config('mail.mailers.smtp.from'))
-            ->subject('WIMM: You have a reminder !')
-            ->view('emails.reminder')
+            ->subject('WIMM: Reset password request !')
+            ->view('emails.reset_password_request')
             ->with([
-                'reminder' => $this->reminder,
+                'token' => $this->token,
                 'mailCode' => self::MAIL_CODE
             ]);
     }

@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Mail\ReminderMail;
-use App\Models\Reminder;
-use Carbon\Carbon;
+use App\Repositories\ReminderRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -37,13 +36,11 @@ class ReminderSenderCommand extends Command
      *
      * @return int
      */
-    public function handle(): int
+    public function handle(ReminderRepository $reminderRepository): int
     {
         $this->info('Starting sending reminders task.');
 
-        $reminders = Reminder::whereDate('start_date', '=', Carbon::now())
-            ->whereDate('end_date', '<=', Carbon::now())
-            ->where('is_sent', false);
+        $reminders = $reminderRepository->getSendableReminders();
 
         if ($reminders->count() === 0) {
             $this->warn('No reminder(s) to send.');

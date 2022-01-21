@@ -2,11 +2,23 @@
 
 namespace App\Listeners;
 
+use App\Mail\ReminderMail;
+use App\Models\Reminder;
+
 class ReminderSentListener
 {
     public function handle(object $event): void
     {
-        $reminder = $event->data['reminder'];
+        $mailType = $event->data['mailCode'];
+
+        match ($mailType) {
+            ReminderMail::MAIL_CODE => $this->updateReminderTask($event->data['reminder']),
+            default => 'no-action'
+        };
+    }
+
+    private function updateReminderTask(Reminder $reminder): void
+    {
         $reminder->update([
             'is_sent' => true,
         ]);

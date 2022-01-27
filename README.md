@@ -2,6 +2,13 @@
 [![coverage report](https://gitlab.com/where-is-my-moneyy/back/badges/develop/coverage.svg)](https://gitlab.com/where-is-my-moneyy/back/-/pipelines)
 # Where's my money 🥵 - back
 
+### About
+
+- Connect your bank to the application
+- Visualize your expenses in a table and a graph.
+- Set goals in the form of a kitty
+- Email notification system
+
 ### Prerequisites
 
 Install the docker stack as defined in the [tools repository](https://gitlab.com/where-is-my-moneyy/back/-/tree/main/docker)
